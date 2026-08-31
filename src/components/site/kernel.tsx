@@ -182,6 +182,542 @@
 //   );
 // }
 
+// import { useEffect, useRef, useState } from "react";
+// import { KERNEL_MENU } from "./data";
+
+// type Point = {
+//   x: number;
+//   y: number;
+// };
+
+// const GRID = 16;
+// const DISPLAY_SIZE = 32;
+
+// const WHITE = "#F0F2F5";
+// const DARK = "#090A0C";
+
+// export function Kernel() {
+//   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+//   const containerRef = useRef<HTMLDivElement | null>(null);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * POSITION
+//    * ----------------------------------------------------------
+//    */
+
+//   const positionRef = useRef<Point>({
+//     x: typeof window !== "undefined" ? window.innerWidth - 90 : 0,
+//     y: typeof window !== "undefined" ? window.innerHeight - 90 : 0,
+//   });
+
+//   /*
+//    * Where Kernel is walking.
+//    *
+//    * IMPORTANT:
+//    * This changes ONLY after a click.
+//    */
+//   const destinationRef = useRef<Point>({
+//     x: typeof window !== "undefined" ? window.innerWidth - 90 : 0,
+//     y: typeof window !== "undefined" ? window.innerHeight - 90 : 0,
+//   });
+
+//   /*
+//    * Cursor is completely separate.
+//    *
+//    * It is ONLY used for the eyes.
+//    */
+//   const cursorRef = useRef<Point>({
+//     x: 0,
+//     y: 0,
+//   });
+
+//   /*
+//    * Walking state.
+//    */
+//   const walkingRef = useRef(false);
+//   const walkDistanceRef = useRef(0);
+
+//   /*
+//    * Click reaction.
+//    */
+//   const [reaction, setReaction] = useState(false);
+//   const reactionTimerRef = useRef<number | null>(null);
+
+//   const [menuOpen, setMenuOpen] = useState(false);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * CURSOR
+//    * ----------------------------------------------------------
+//    *
+//    * Cursor movement NEVER moves Kernel.
+//    */
+//   useEffect(() => {
+//     const handlePointerMove = (event: PointerEvent) => {
+//       cursorRef.current = {
+//         x: event.clientX,
+//         y: event.clientY,
+//       };
+//     };
+
+//     window.addEventListener("pointermove", handlePointerMove, {
+//       passive: true,
+//     });
+
+//     return () => {
+//       window.removeEventListener("pointermove", handlePointerMove);
+//     };
+//   }, []);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * PAGE CLICK
+//    * ----------------------------------------------------------
+//    *
+//    * Clicking anywhere gives Kernel a destination.
+//    */
+//   useEffect(() => {
+//     const handlePagePointerDown = (event: PointerEvent) => {
+//       const padding = 35;
+
+//       const destinationX = Math.max(
+//         padding,
+//         Math.min(window.innerWidth - padding, event.clientX),
+//       );
+
+//       const destinationY = Math.max(
+//         padding,
+//         Math.min(window.innerHeight - padding, event.clientY),
+//       );
+
+//       destinationRef.current = {
+//         x: destinationX,
+//         y: destinationY,
+//       };
+
+//       walkingRef.current = true;
+
+//       triggerReaction();
+//     };
+
+//     window.addEventListener(
+//       "pointerdown",
+//       handlePagePointerDown,
+//     );
+
+//     return () => {
+//       window.removeEventListener(
+//         "pointerdown",
+//         handlePagePointerDown,
+//       );
+//     };
+//   }, []);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * ESCAPE
+//    * ----------------------------------------------------------
+//    */
+
+//   useEffect(() => {
+//     const handleKeyDown = (event: KeyboardEvent) => {
+//       if (event.key === "Escape") {
+//         setMenuOpen(false);
+//       }
+//     };
+
+//     window.addEventListener("keydown", handleKeyDown);
+
+//     return () => {
+//       window.removeEventListener("keydown", handleKeyDown);
+//     };
+//   }, []);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * MAIN ANIMATION LOOP
+//    * ----------------------------------------------------------
+//    *
+//    * This is NOT spring physics.
+//    *
+//    * Kernel walks at a capped speed.
+//    */
+//   useEffect(() => {
+//     let frame = 0;
+
+//     const animate = () => {
+//       const position = positionRef.current;
+//       const destination = destinationRef.current;
+
+//       const dx = destination.x - position.x;
+//       const dy = destination.y - position.y;
+
+//       const distance = Math.hypot(dx, dy);
+
+//       /*
+//        * Walking speed.
+//        *
+//        * This is deliberately slow.
+//        */
+//       const WALK_SPEED = 1.35;
+
+//       if (walkingRef.current && distance > 1.5) {
+//         /*
+//          * Normalized direction.
+//          */
+//         const directionX = dx / distance;
+//         const directionY = dy / distance;
+
+//         /*
+//          * Move by a FIXED amount.
+//          *
+//          * This is what makes it walk instead of fly.
+//          */
+//         const step = Math.min(WALK_SPEED, distance);
+
+//         position.x += directionX * step;
+//         position.y += directionY * step;
+
+//         walkDistanceRef.current += step;
+
+//         /*
+//          * Stop exactly at the destination.
+//          */
+//         if (distance <= WALK_SPEED + 0.5) {
+//           position.x = destination.x;
+//           position.y = destination.y;
+
+//           walkingRef.current = false;
+//           walkDistanceRef.current = 0;
+//         }
+//       } else {
+//         walkingRef.current = false;
+//       }
+
+//       /*
+//        * Keep Kernel inside the viewport.
+//        */
+//       const padding = 24;
+
+//       position.x = Math.max(
+//         padding,
+//         Math.min(window.innerWidth - padding, position.x),
+//       );
+
+//       position.y = Math.max(
+//         padding,
+//         Math.min(window.innerHeight - padding, position.y),
+//       );
+
+//       if (containerRef.current) {
+//         containerRef.current.style.transform =
+//           `translate3d(${position.x}px, ${position.y}px, 0)`;
+//       }
+
+//       drawPixelCompanion();
+
+//       frame = requestAnimationFrame(animate);
+//     };
+
+//     frame = requestAnimationFrame(animate);
+
+//     return () => {
+//       cancelAnimationFrame(frame);
+//     };
+//   }, []);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * PIXEL COMPANION
+//    * ----------------------------------------------------------
+//    *
+//    * Based directly on Gemini's 16x16 pixel drawing.
+//    */
+//   function drawPixelCompanion() {
+//     const canvas = canvasRef.current;
+
+//     if (!canvas) return;
+
+//     const ctx = canvas.getContext("2d");
+
+//     if (!ctx) return;
+
+//     ctx.imageSmoothingEnabled = false;
+
+//     ctx.clearRect(0, 0, GRID, GRID);
+
+//     /*
+//      * --------------------------------------------------------
+//      * HEAD / HAT
+//      * --------------------------------------------------------
+//      */
+
+//     ctx.fillStyle = WHITE;
+
+//     ctx.fillRect(4, 1, 8, 1);
+//     ctx.fillRect(3, 2, 10, 2);
+
+//     /*
+//      * --------------------------------------------------------
+//      * FACE
+//      * --------------------------------------------------------
+//      */
+
+//     ctx.fillRect(2, 4, 12, 4);
+
+//     /*
+//      * --------------------------------------------------------
+//      * EYES
+//      * --------------------------------------------------------
+//      *
+//      * Eyes follow the cursor.
+//      */
+//     const rect = canvas.getBoundingClientRect();
+
+//     const centerX = rect.left + rect.width / 2;
+//     const centerY = rect.top + rect.height / 2;
+
+//     const cursor = cursorRef.current;
+
+//     const dx = cursor.x - centerX;
+//     const dy = cursor.y - centerY;
+
+//     const distance = Math.hypot(dx, dy);
+
+//     const eyeDistance = Math.min(
+//       1.5,
+//       distance / 60,
+//     );
+
+//     const angle = Math.atan2(dy, dx);
+
+//     const eyeX = Math.round(
+//       Math.cos(angle) * eyeDistance,
+//     );
+
+//     const eyeY = Math.round(
+//       Math.sin(angle) * eyeDistance,
+//     );
+
+//     ctx.fillStyle = DARK;
+
+//     ctx.fillRect(
+//       4 + eyeX,
+//       5 + eyeY,
+//       2,
+//       2,
+//     );
+
+//     ctx.fillRect(
+//       9 + eyeX,
+//       5 + eyeY,
+//       2,
+//       2,
+//     );
+
+//     /*
+//      * --------------------------------------------------------
+//      * BODY
+//      * --------------------------------------------------------
+//      */
+
+//     ctx.fillStyle = WHITE;
+
+//     ctx.fillRect(3, 8, 10, 4);
+
+//     /*
+//      * Arms.
+//      */
+//     ctx.fillRect(2, 9, 12, 2);
+
+//     /*
+//      * --------------------------------------------------------
+//      * WALKING LEGS
+//      * --------------------------------------------------------
+//      *
+//      * Two tiny alternating frames.
+//      *
+//      * When stationary:
+//      * normal standing pose.
+//      *
+//      * When walking:
+//      * legs alternate.
+//      */
+//     const walkFrame =
+//       Math.floor(walkDistanceRef.current / 6) % 2;
+
+//     if (!walkingRef.current) {
+//       /*
+//        * Standing.
+//        */
+//       ctx.fillRect(4, 12, 3, 3);
+//       ctx.fillRect(9, 12, 3, 3);
+
+//       ctx.fillStyle = DARK;
+//       ctx.fillRect(7, 12, 2, 2);
+//     } else if (walkFrame === 0) {
+//       /*
+//        * Walking frame A.
+//        */
+//       ctx.fillRect(3, 12, 3, 3);
+//       ctx.fillRect(10, 12, 3, 3);
+
+//       ctx.fillStyle = DARK;
+//       ctx.fillRect(7, 12, 2, 2);
+//     } else {
+//       /*
+//        * Walking frame B.
+//        */
+//       ctx.fillRect(5, 12, 3, 3);
+//       ctx.fillRect(8, 12, 3, 3);
+
+//       ctx.fillStyle = DARK;
+//       ctx.fillRect(7, 12, 1, 2);
+//     }
+//   }
+
+//   /*
+//    * ----------------------------------------------------------
+//    * REACTION
+//    * ----------------------------------------------------------
+//    */
+
+//   function triggerReaction() {
+//     setReaction(true);
+
+//     if (reactionTimerRef.current !== null) {
+//       window.clearTimeout(reactionTimerRef.current);
+//     }
+
+//     reactionTimerRef.current = window.setTimeout(() => {
+//       setReaction(false);
+//     }, 220);
+//   }
+
+//   /*
+//    * ----------------------------------------------------------
+//    * CLEANUP
+//    * ----------------------------------------------------------
+//    */
+
+//   useEffect(() => {
+//     return () => {
+//       if (reactionTimerRef.current !== null) {
+//         window.clearTimeout(
+//           reactionTimerRef.current,
+//         );
+//       }
+//     };
+//   }, []);
+
+//   /*
+//    * ----------------------------------------------------------
+//    * MENU
+//    * ----------------------------------------------------------
+//    */
+
+//   const menu = menuOpen ? (
+//     <div
+//       className="absolute bottom-full right-0 mb-3 w-52 border border-border bg-popover/95 p-2 shadow-2xl backdrop-blur-md"
+//       onPointerDown={(event) => {
+//         event.stopPropagation();
+//       }}
+//     >
+//       <div className="mb-1 border-b border-border px-2 pb-2">
+//         <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+//           Kernel
+//         </span>
+//       </div>
+
+//       <nav className="flex flex-col">
+//         {KERNEL_MENU.map((item) => (
+//           <a
+//             key={item.label}
+//             href={item.href}
+//             target={
+//               item.external
+//                 ? "_blank"
+//                 : undefined
+//             }
+//             rel={
+//               item.external
+//                 ? "noreferrer"
+//                 : undefined
+//             }
+//             onClick={() => {
+//               setMenuOpen(false);
+//             }}
+//             className="flex items-center gap-2 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+//           >
+//             <span className="w-5 text-accent/70">
+//               {item.index}
+//             </span>
+
+//             <span>{item.label}</span>
+//           </a>
+//         ))}
+//       </nav>
+//     </div>
+//   ) : null;
+
+//   /*
+//    * ----------------------------------------------------------
+//    * RENDER
+//    * ----------------------------------------------------------
+//    */
+
+//   return (
+//     <div
+//       ref={containerRef}
+//       className="pointer-events-none fixed left-0 top-0 z-50"
+//       style={{
+//         transform:
+//           "translate3d(-90px, -90px, 0)",
+//       }}
+//     >
+//       <div className="relative -translate-x-1/2 -translate-y-1/2">
+//         {menu}
+
+//         <button
+//           type="button"
+//           aria-label="Open Kernel navigation"
+//           aria-expanded={menuOpen}
+//           onPointerDown={(event) => {
+//             /*
+//              * Kernel itself is NOT a page destination.
+//              */
+//             event.stopPropagation();
+//           }}
+//           onClick={(event) => {
+//             event.stopPropagation();
+
+//             triggerReaction();
+
+//             setMenuOpen((current) => !current);
+//           }}
+//           className="pointer-events-auto flex h-10 w-10 items-center justify-center focus:outline-none"
+//         >
+//           <canvas
+//             ref={canvasRef}
+//             width={DISPLAY_SIZE / 2}
+//             height={DISPLAY_SIZE / 2}
+//             className="h-8 w-8"
+//             style={{
+//               width: `${DISPLAY_SIZE}px`,
+//               height: `${DISPLAY_SIZE}px`,
+//               imageRendering: "pixelated",
+//               animation: reaction
+//                 ? "kernel-hop 220ms steps(3, end)"
+//                 : "none",
+//             }}
+//           />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
 import { useEffect, useRef, useState } from "react";
 import { KERNEL_MENU } from "./data";
 
@@ -213,9 +749,6 @@ export function Kernel() {
 
   /*
    * Where Kernel is walking.
-   *
-   * IMPORTANT:
-   * This changes ONLY after a click.
    */
   const destinationRef = useRef<Point>({
     x: typeof window !== "undefined" ? window.innerWidth - 90 : 0,
@@ -223,9 +756,7 @@ export function Kernel() {
   });
 
   /*
-   * Cursor is completely separate.
-   *
-   * It is ONLY used for the eyes.
+   * Cursor for tracking eye direction.
    */
   const cursorRef = useRef<Point>({
     x: 0,
@@ -250,8 +781,6 @@ export function Kernel() {
    * ----------------------------------------------------------
    * CURSOR
    * ----------------------------------------------------------
-   *
-   * Cursor movement NEVER moves Kernel.
    */
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -274,8 +803,6 @@ export function Kernel() {
    * ----------------------------------------------------------
    * PAGE CLICK
    * ----------------------------------------------------------
-   *
-   * Clicking anywhere gives Kernel a destination.
    */
   useEffect(() => {
     const handlePagePointerDown = (event: PointerEvent) => {
@@ -301,16 +828,10 @@ export function Kernel() {
       triggerReaction();
     };
 
-    window.addEventListener(
-      "pointerdown",
-      handlePagePointerDown,
-    );
+    window.addEventListener("pointerdown", handlePagePointerDown);
 
     return () => {
-      window.removeEventListener(
-        "pointerdown",
-        handlePagePointerDown,
-      );
+      window.removeEventListener("pointerdown", handlePagePointerDown);
     };
   }, []);
 
@@ -319,7 +840,6 @@ export function Kernel() {
    * ESCAPE
    * ----------------------------------------------------------
    */
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -338,10 +858,6 @@ export function Kernel() {
    * ----------------------------------------------------------
    * MAIN ANIMATION LOOP
    * ----------------------------------------------------------
-   *
-   * This is NOT spring physics.
-   *
-   * Kernel walks at a capped speed.
    */
   useEffect(() => {
     let frame = 0;
@@ -354,26 +870,12 @@ export function Kernel() {
       const dy = destination.y - position.y;
 
       const distance = Math.hypot(dx, dy);
-
-      /*
-       * Walking speed.
-       *
-       * This is deliberately slow.
-       */
       const WALK_SPEED = 1.35;
 
       if (walkingRef.current && distance > 1.5) {
-        /*
-         * Normalized direction.
-         */
         const directionX = dx / distance;
         const directionY = dy / distance;
 
-        /*
-         * Move by a FIXED amount.
-         *
-         * This is what makes it walk instead of fly.
-         */
         const step = Math.min(WALK_SPEED, distance);
 
         position.x += directionX * step;
@@ -381,9 +883,6 @@ export function Kernel() {
 
         walkDistanceRef.current += step;
 
-        /*
-         * Stop exactly at the destination.
-         */
         if (distance <= WALK_SPEED + 0.5) {
           position.x = destination.x;
           position.y = destination.y;
@@ -395,9 +894,6 @@ export function Kernel() {
         walkingRef.current = false;
       }
 
-      /*
-       * Keep Kernel inside the viewport.
-       */
       const padding = 24;
 
       position.x = Math.max(
@@ -411,8 +907,7 @@ export function Kernel() {
       );
 
       if (containerRef.current) {
-        containerRef.current.style.transform =
-          `translate3d(${position.x}px, ${position.y}px, 0)`;
+        containerRef.current.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
       }
 
       drawPixelCompanion();
@@ -429,159 +924,93 @@ export function Kernel() {
 
   /*
    * ----------------------------------------------------------
-   * PIXEL COMPANION
+   * PIXEL COMPANION DRAWING (EXACT IMAGE RECREATION)
    * ----------------------------------------------------------
-   *
-   * Based directly on Gemini's 16x16 pixel drawing.
    */
   function drawPixelCompanion() {
     const canvas = canvasRef.current;
-
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-
     if (!ctx) return;
 
     ctx.imageSmoothingEnabled = false;
-
     ctx.clearRect(0, 0, GRID, GRID);
-
-    /*
-     * --------------------------------------------------------
-     * HEAD / HAT
-     * --------------------------------------------------------
-     */
 
     ctx.fillStyle = WHITE;
 
-    ctx.fillRect(4, 1, 8, 1);
-    ctx.fillRect(3, 2, 10, 2);
+    // 1. ROUNDED HEAD & DOME BODY
+    ctx.fillRect(6, 1, 4, 1);   // Top curve
+    ctx.fillRect(5, 2, 6, 1);   // Upper dome
+    ctx.fillRect(4, 3, 8, 8);   // Main torso block
+    ctx.fillRect(5, 11, 6, 1);  // Bottom body curve
 
-    /*
-     * --------------------------------------------------------
-     * FACE
-     * --------------------------------------------------------
-     */
+    // 2. ARMS
+    const walkFrame = Math.floor(walkDistanceRef.current / 6) % 2;
 
-    ctx.fillRect(2, 4, 12, 4);
+    if (!walkingRef.current) {
+      // Resting arms (slanted downward as seen in image)
+      ctx.fillRect(3, 7, 1, 2);
+      ctx.fillRect(12, 7, 1, 2);
+    } else if (walkFrame === 0) {
+      // Arm swing A
+      ctx.fillRect(3, 6, 1, 2);
+      ctx.fillRect(12, 8, 1, 2);
+    } else {
+      // Arm swing B
+      ctx.fillRect(3, 8, 1, 2);
+      ctx.fillRect(12, 6, 1, 2);
+    }
 
-    /*
-     * --------------------------------------------------------
-     * EYES
-     * --------------------------------------------------------
-     *
-     * Eyes follow the cursor.
-     */
+    // 3. EYES WITH CURSOR TRACKING
     const rect = canvas.getBoundingClientRect();
-
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
     const cursor = cursorRef.current;
-
     const dx = cursor.x - centerX;
     const dy = cursor.y - centerY;
 
     const distance = Math.hypot(dx, dy);
-
-    const eyeDistance = Math.min(
-      1.5,
-      distance / 60,
-    );
-
+    const eyeDistance = Math.min(1.2, distance / 60);
     const angle = Math.atan2(dy, dx);
 
-    const eyeX = Math.round(
-      Math.cos(angle) * eyeDistance,
-    );
+    const eyeX = Math.round(Math.cos(angle) * eyeDistance);
+    const eyeY = Math.round(Math.sin(angle) * eyeDistance);
 
-    const eyeY = Math.round(
-      Math.sin(angle) * eyeDistance,
-    );
-
+    // Render 1x2 Vertical Pupil Slits
     ctx.fillStyle = DARK;
+    ctx.fillRect(6 + eyeX, 6 + eyeY, 1, 2); // Left Eye Slit
+    ctx.fillRect(9 + eyeX, 6 + eyeY, 1, 2); // Right Eye Slit
 
-    ctx.fillRect(
-      4 + eyeX,
-      5 + eyeY,
-      2,
-      2,
-    );
-
-    ctx.fillRect(
-      9 + eyeX,
-      5 + eyeY,
-      2,
-      2,
-    );
-
-    /*
-     * --------------------------------------------------------
-     * BODY
-     * --------------------------------------------------------
-     */
-
+    // 4. LEGS & FEET (EXACT IMAGE LEG PROFILE)
     ctx.fillStyle = WHITE;
 
-    ctx.fillRect(3, 8, 10, 4);
-
-    /*
-     * Arms.
-     */
-    ctx.fillRect(2, 9, 12, 2);
-
-    /*
-     * --------------------------------------------------------
-     * WALKING LEGS
-     * --------------------------------------------------------
-     *
-     * Two tiny alternating frames.
-     *
-     * When stationary:
-     * normal standing pose.
-     *
-     * When walking:
-     * legs alternate.
-     */
-    const walkFrame =
-      Math.floor(walkDistanceRef.current / 6) % 2;
-
     if (!walkingRef.current) {
-      /*
-       * Standing.
-       */
-      ctx.fillRect(4, 12, 3, 3);
-      ctx.fillRect(9, 12, 3, 3);
+      // Default Standing Pose (L-shaped feet facing outward)
+      // Left leg
+      ctx.fillRect(5, 12, 1, 2);
+      ctx.fillRect(4, 13, 2, 1);
 
-      ctx.fillStyle = DARK;
-      ctx.fillRect(7, 12, 2, 2);
+      // Right leg
+      ctx.fillRect(10, 12, 1, 2);
+      ctx.fillRect(10, 13, 2, 1);
     } else if (walkFrame === 0) {
-      /*
-       * Walking frame A.
-       */
-      ctx.fillRect(3, 12, 3, 3);
-      ctx.fillRect(10, 12, 3, 3);
+      // Walking Step A
+      ctx.fillRect(4, 12, 1, 2);
+      ctx.fillRect(3, 13, 2, 1);
 
-      ctx.fillStyle = DARK;
-      ctx.fillRect(7, 12, 2, 2);
+      ctx.fillRect(10, 12, 1, 1);
+      ctx.fillRect(10, 13, 2, 1);
     } else {
-      /*
-       * Walking frame B.
-       */
-      ctx.fillRect(5, 12, 3, 3);
-      ctx.fillRect(8, 12, 3, 3);
+      // Walking Step B
+      ctx.fillRect(5, 12, 1, 1);
+      ctx.fillRect(4, 13, 2, 1);
 
-      ctx.fillStyle = DARK;
-      ctx.fillRect(7, 12, 1, 2);
+      ctx.fillRect(11, 12, 1, 2);
+      ctx.fillRect(11, 13, 2, 1);
     }
   }
-
-  /*
-   * ----------------------------------------------------------
-   * REACTION
-   * ----------------------------------------------------------
-   */
 
   function triggerReaction() {
     setReaction(true);
@@ -595,27 +1024,13 @@ export function Kernel() {
     }, 220);
   }
 
-  /*
-   * ----------------------------------------------------------
-   * CLEANUP
-   * ----------------------------------------------------------
-   */
-
   useEffect(() => {
     return () => {
       if (reactionTimerRef.current !== null) {
-        window.clearTimeout(
-          reactionTimerRef.current,
-        );
+        window.clearTimeout(reactionTimerRef.current);
       }
     };
   }, []);
-
-  /*
-   * ----------------------------------------------------------
-   * MENU
-   * ----------------------------------------------------------
-   */
 
   const menu = menuOpen ? (
     <div
@@ -635,25 +1050,14 @@ export function Kernel() {
           <a
             key={item.label}
             href={item.href}
-            target={
-              item.external
-                ? "_blank"
-                : undefined
-            }
-            rel={
-              item.external
-                ? "noreferrer"
-                : undefined
-            }
+            target={item.external ? "_blank" : undefined}
+            rel={item.external ? "noreferrer" : undefined}
             onClick={() => {
               setMenuOpen(false);
             }}
             className="flex items-center gap-2 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
-            <span className="w-5 text-accent/70">
-              {item.index}
-            </span>
-
+            <span className="w-5 text-accent/70">{item.index}</span>
             <span>{item.label}</span>
           </a>
         ))}
@@ -661,19 +1065,12 @@ export function Kernel() {
     </div>
   ) : null;
 
-  /*
-   * ----------------------------------------------------------
-   * RENDER
-   * ----------------------------------------------------------
-   */
-
   return (
     <div
       ref={containerRef}
       className="pointer-events-none fixed left-0 top-0 z-50"
       style={{
-        transform:
-          "translate3d(-90px, -90px, 0)",
+        transform: "translate3d(-90px, -90px, 0)",
       }}
     >
       <div className="relative -translate-x-1/2 -translate-y-1/2">
@@ -684,24 +1081,19 @@ export function Kernel() {
           aria-label="Open Kernel navigation"
           aria-expanded={menuOpen}
           onPointerDown={(event) => {
-            /*
-             * Kernel itself is NOT a page destination.
-             */
             event.stopPropagation();
           }}
           onClick={(event) => {
             event.stopPropagation();
-
             triggerReaction();
-
             setMenuOpen((current) => !current);
           }}
           className="pointer-events-auto flex h-10 w-10 items-center justify-center focus:outline-none"
         >
           <canvas
             ref={canvasRef}
-            width={DISPLAY_SIZE / 2}
-            height={DISPLAY_SIZE / 2}
+            width={GRID}
+            height={GRID}
             className="h-8 w-8"
             style={{
               width: `${DISPLAY_SIZE}px`,
