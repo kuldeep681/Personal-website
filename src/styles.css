@@ -12,9 +12,15 @@
  * ============================================================
  *
  * Dark editorial / technical minimal.
- * Deep near-black canvas.
- * Off-white type.
- * Restrained amber accent.
+ *
+ * The background uses the same visual language as the
+ * original Hero SystemField:
+ *
+ * - near-black canvas
+ * - restrained technical network
+ * - thin structural lines
+ * - sparse nodes
+ * - amber highlights
  */
 
 @theme inline {
@@ -49,13 +55,12 @@
 
   --color-border: var(--border);
   --color-hairline: var(--hairline);
+
   --color-input: var(--input);
   --color-ring: var(--ring);
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -71,7 +76,7 @@
   --background: oklch(0.145 0.004 285);
   --foreground: oklch(0.95 0.004 90);
 
-  --card: oklch(0.18 0.004 285);
+  --card: oklch(0.175 0.004 285);
   --card-foreground: oklch(0.95 0.004 90);
 
   --popover: oklch(0.175 0.004 285);
@@ -80,10 +85,10 @@
   --primary: oklch(0.95 0.004 90);
   --primary-foreground: oklch(0.145 0.004 285);
 
-  --secondary: oklch(0.22 0.004 285);
+  --secondary: oklch(0.205 0.004 285);
   --secondary-foreground: oklch(0.95 0.004 90);
 
-  --muted: oklch(0.22 0.004 285);
+  --muted: oklch(0.21 0.004 285);
   --muted-foreground: oklch(0.62 0.005 285);
 
   --accent: oklch(0.8 0.13 78);
@@ -92,8 +97,8 @@
   --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.26 0.004 285);
-  --hairline: oklch(0.235 0.004 285);
+  --border: oklch(0.255 0.004 285);
+  --hairline: oklch(0.22 0.004 285);
 
   --input: oklch(0.26 0.004 285);
   --ring: oklch(0.8 0.13 78);
@@ -106,12 +111,15 @@
  */
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     border-color: var(--color-border);
   }
 
   html {
     scroll-behavior: smooth;
+    background: var(--color-background);
   }
 
   body {
@@ -121,26 +129,28 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
 
-    /*
-     * Global technical mesh.
-     *
-     * This sits underneath the entire page.
-     * BackgroundMesh.tsx can add the interactive layer
-     * above this base grid.
-     */
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-
-    background-size: 48px 48px;
-    background-position: center center;
-
     font-family: var(--font-sans);
+
+    /*
+     * Comfortable global reading size.
+     */
+    font-size: 18px;
+    line-height: 1.65;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
     font-feature-settings: "ss01";
+
+    /*
+     * Very subtle technical grid underneath the SVG network.
+     */
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+
+    background-size: 64px 64px;
+    background-position: center center;
   }
 
   ::selection {
@@ -156,6 +166,10 @@
   button {
     font: inherit;
   }
+
+  a {
+    color: inherit;
+  }
 }
 
 /*
@@ -164,20 +178,40 @@
  * ============================================================
  */
 
+/*
+ * Section labels:
+ *
+ * ABOUT
+ * EXPERIENCE
+ * SELECTED WORK
+ * HOW I THINK
+ * LAB
+ * CONTACT
+ *
+ * Larger technical label for comfortable reading.
+ */
+
 @utility eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.22em;
-  line-height: 1.2;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  line-height: 1.45;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
 
+/*
+ * Main display typography.
+ *
+ * Intentionally unchanged.
+ */
+
 @utility display {
   font-family: var(--font-display);
   font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
+  letter-spacing: -0.04em;
+  line-height: 0.94;
 }
 
 @utility rule-t {
@@ -189,28 +223,26 @@
 
   &::after {
     content: "";
-
     position: absolute;
     inset: 0;
-
     pointer-events: none;
 
-    opacity: 0.035;
+    opacity: 0.028;
 
-    background-image: radial-gradient(var(--color-foreground) 0.5px, transparent 0.5px);
+    background-image: radial-gradient(var(--color-foreground) 0.45px, transparent 0.45px);
 
-    background-size: 3px 3px;
+    background-size: 4px 4px;
   }
 }
 
 @utility reveal {
   opacity: 0;
 
-  transform: translateY(18px);
+  transform: translateY(14px);
 
   transition:
-    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @utility reveal-in {
@@ -220,7 +252,35 @@
 
 /*
  * ============================================================
- * KERNEL
+ * READABILITY
+ * ============================================================
+ *
+ * Supporting copy is deliberately larger.
+ *
+ * Main display headings are NOT affected.
+ */
+
+@layer utilities {
+  .text-sm {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+}
+
+/*
+ * Large desktop.
+ */
+
+@media (min-width: 1280px) {
+  .text-sm {
+    font-size: 1.125rem;
+    line-height: 1.75;
+  }
+}
+
+/*
+ * ============================================================
+ * INTERACTION
  * ============================================================
  */
 
@@ -234,12 +294,6 @@
     transform: translateY(-2px);
   }
 }
-
-/*
- * Click reaction.
- *
- * Kernel makes a slightly more noticeable jump.
- */
 
 @keyframes kernel-hop {
   0% {
@@ -258,12 +312,6 @@
     transform: translateY(0);
   }
 }
-
-/*
- * ============================================================
- * OTHER MOTION
- * ============================================================
- */
 
 @keyframes dash-flow {
   to {
@@ -285,6 +333,36 @@
 
 /*
  * ============================================================
+ * SCROLLBAR
+ * ============================================================
+ */
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) var(--color-background);
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
+  }
+}
+
+/*
+ * ============================================================
  * ACCESSIBILITY
  * ============================================================
  */
@@ -300,5 +378,17 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * ============================================================
+ * RESPONSIVE TYPE GUARDRAILS
+ * ============================================================
+ */
+
+@media (min-width: 1536px) {
+  .display {
+    max-width: 100%;
   }
 }

@@ -12,40 +12,52 @@ export function Nav({ onCommand }: { onCommand: () => void }) {
   const [solid, setSolid] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 40);
+    const onScroll = () => {
+      setSolid(window.scrollY > 32);
+    };
+
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+
+    window.addEventListener("scroll", onScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-colors duration-500 ${
-        solid ? "border-b border-hairline bg-background/80 backdrop-blur-md" : ""
+      className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
+        solid ? "border-b border-hairline bg-background/75 backdrop-blur-lg" : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-12">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-12 md:py-5">
         <a
           href="#top"
-          className="font-display text-[13px] uppercase tracking-[0.28em] text-foreground"
+          className="font-display text-[14px] font-semibold uppercase tracking-[0.25em] text-foreground transition-opacity hover:opacity-70"
         >
           Kuldeep Mandal
         </a>
+
         <nav className="hidden items-center gap-8 md:flex">
-          {LINKS.map((l) => (
+          {LINKS.map((link) => (
             <a
-              key={l.label}
-              href={l.href}
-              className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+              key={link.label}
+              href={link.href}
+              className="font-mono text-[13px] font-semibold uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
             >
-              {l.label}
+              {link.label}
             </a>
           ))}
         </nav>
+
         <button
           type="button"
           onClick={onCommand}
-          className="flex items-center gap-2 border border-border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+          aria-label="Open command palette"
+          className="flex items-center gap-2 border border-border px-3 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
         >
           <span className="hidden sm:inline">Search</span>
           <span>⌘K</span>

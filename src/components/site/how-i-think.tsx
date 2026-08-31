@@ -4,7 +4,11 @@ import { useReveal } from "./use-reveal";
 type Decision = {
   id: string;
   question: string;
-  options: { label: string; take: string; chosen?: boolean }[];
+  options: {
+    label: string;
+    take: string;
+    chosen?: boolean;
+  }[];
 };
 
 const DECISIONS: Decision[] = [
@@ -72,81 +76,90 @@ const DECISIONS: Decision[] = [
 
 export function HowIThink() {
   const [openId, setOpenId] = useState<string | null>(DECISIONS[0]!.id);
+
   const head = useReveal();
 
   return (
     <section
       id="engineering"
-      className="scroll-mt-24 border-y border-hairline bg-card/40 py-28 md:py-40"
+      className="scroll-mt-24 border-y border-hairline bg-card/40 py-24 md:py-32"
     >
       <div className="mx-auto max-w-[1400px] px-6 md:px-12">
         <div ref={head.ref} className={`${head.className} grid grid-cols-12 gap-y-8`}>
           <div className="col-span-12 lg:col-span-4">
             <p className="eyebrow">How I think</p>
           </div>
+
           <div className="col-span-12 lg:col-span-8">
-            <h2 className="display text-[10vw] sm:text-[7vw] lg:text-[4.4vw]">
+            <h2 className="display max-w-4xl text-[7vw] leading-[0.92] sm:text-[4.8vw] lg:text-[2.8vw]">
               DESIGN A SCALABLE
               <br />
               TICKET PROCESSING
               <br />
               <span className="text-muted-foreground">SYSTEM.</span>
             </h2>
-            <p className="mt-8 max-w-md text-sm leading-relaxed text-muted-foreground">
+
+            <p className="mt-6 max-w-md text-[17px] leading-7 text-muted-foreground">
               Four decisions, each with a real trade-off. Open one to see the reasoning.
             </p>
           </div>
         </div>
 
-        <div className="mt-20 grid grid-cols-12">
+        <div className="mt-16 grid grid-cols-12">
           <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-            {DECISIONS.map((d, i) => {
-              const open = openId === d.id;
+            {DECISIONS.map((decision, index) => {
+              const open = openId === decision.id;
+
               return (
-                <div key={d.id} className="rule-t">
+                <div key={decision.id} className="rule-t">
                   <button
                     type="button"
-                    onClick={() => setOpenId(open ? null : d.id)}
-                    className="flex w-full items-baseline gap-6 py-6 text-left"
+                    onClick={() => setOpenId(open ? null : decision.id)}
+                    className="flex w-full items-baseline gap-5 py-5 text-left"
                   >
-                    <span className="font-mono text-[10px] text-accent">
-                      Q{String(i + 1).padStart(2, "0")}
+                    <span className="font-mono text-[13px] font-medium tracking-[0.08em] text-accent">
+                      Q{String(index + 1).padStart(2, "0")}
                     </span>
+
                     <span
-                      className={`flex-1 font-display text-xl tracking-tight transition-colors sm:text-2xl ${
+                      className={`flex-1 font-display text-[1.15rem] tracking-tight transition-colors sm:text-[1.25rem] ${
                         open ? "text-foreground" : "text-muted-foreground"
                       }`}
                     >
-                      {d.question}
+                      {decision.question}
                     </span>
-                    <span className="font-mono text-xs text-muted-foreground">
+
+                    <span className="font-mono text-[13px] text-muted-foreground">
                       {open ? "−" : "+"}
                     </span>
                   </button>
+
                   <div
                     className="grid overflow-hidden transition-all duration-500"
-                    style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+                    style={{
+                      gridTemplateRows: open ? "1fr" : "0fr",
+                    }}
                   >
                     <div className="min-h-0">
-                      <div className="grid gap-6 pb-10 sm:grid-cols-2">
-                        {d.options.map((o) => (
+                      <div className="grid gap-6 pb-8 sm:grid-cols-2">
+                        {decision.options.map((option) => (
                           <div
-                            key={o.label}
+                            key={option.label}
                             className="border-l pl-5"
                             style={{
-                              borderColor: o.chosen
+                              borderColor: option.chosen
                                 ? "var(--color-accent)"
                                 : "var(--color-hairline)",
                             }}
                           >
-                            <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-foreground">
-                              {o.label}
-                              {o.chosen && (
-                                <span className="text-accent">— chosen</span>
-                              )}
+                            <p className="flex flex-wrap items-center gap-2 font-mono text-[13px] font-medium uppercase leading-5 tracking-[0.1em] text-foreground">
+                              {option.label}
+
+                              {option.chosen && <span className="text-accent">— chosen</span>}
                             </p>
-                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                              {o.take}
+
+                            <p className="mt-3 text-[17px] leading-7 text-muted-foreground">
+                              {option.take}
                             </p>
                           </div>
                         ))}

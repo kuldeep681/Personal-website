@@ -2,20 +2,34 @@ import { useEffect, useRef } from "react";
 import { GITHUB_URL } from "./data";
 
 const NODES = [
-  { x: 12, y: 22 },
-  { x: 30, y: 10 },
-  { x: 46, y: 30 },
-  { x: 66, y: 16 },
-  { x: 84, y: 34 },
-  { x: 20, y: 52 },
-  { x: 40, y: 66 },
-  { x: 58, y: 50 },
-  { x: 76, y: 68 },
-  { x: 92, y: 56 },
-  { x: 8, y: 80 },
-  { x: 34, y: 90 },
-  { x: 62, y: 86 },
-  { x: 88, y: 90 },
+  { x: 8, y: 12 },
+  { x: 24, y: 6 },
+  { x: 42, y: 16 },
+  { x: 61, y: 8 },
+  { x: 79, y: 18 },
+  { x: 94, y: 10 },
+  { x: 15, y: 30 },
+  { x: 34, y: 25 },
+  { x: 52, y: 34 },
+  { x: 71, y: 27 },
+  { x: 88, y: 35 },
+  { x: 5, y: 48 },
+  { x: 22, y: 44 },
+  { x: 41, y: 53 },
+  { x: 59, y: 46 },
+  { x: 77, y: 55 },
+  { x: 96, y: 48 },
+  { x: 13, y: 67 },
+  { x: 31, y: 62 },
+  { x: 49, y: 72 },
+  { x: 68, y: 64 },
+  { x: 86, y: 73 },
+  { x: 4, y: 86 },
+  { x: 23, y: 82 },
+  { x: 42, y: 92 },
+  { x: 62, y: 84 },
+  { x: 81, y: 93 },
+  { x: 96, y: 85 },
 ];
 
 const EDGES: [number, number][] = [
@@ -23,52 +37,98 @@ const EDGES: [number, number][] = [
   [1, 2],
   [2, 3],
   [3, 4],
-  [0, 5],
-  [5, 6],
-  [2, 7],
-  [7, 8],
-  [4, 9],
-  [8, 9],
-  [5, 10],
-  [6, 11],
-  [8, 12],
-  [9, 13],
+  [4, 5],
+  [0, 6],
+  [1, 7],
+  [2, 8],
+  [3, 9],
+  [4, 10],
   [6, 7],
+  [7, 8],
+  [8, 9],
+  [9, 10],
+  [6, 11],
+  [6, 12],
+  [7, 12],
+  [7, 13],
+  [8, 13],
+  [8, 14],
+  [9, 14],
+  [9, 15],
+  [10, 15],
+  [10, 16],
   [11, 12],
   [12, 13],
-  [1, 7],
+  [13, 14],
+  [14, 15],
+  [15, 16],
+  [11, 17],
+  [12, 18],
+  [13, 19],
+  [14, 20],
+  [15, 21],
+  [17, 18],
+  [18, 19],
+  [19, 20],
+  [20, 21],
+  [17, 22],
+  [18, 23],
+  [19, 24],
+  [20, 25],
+  [21, 26],
+  [22, 23],
+  [23, 24],
+  [24, 25],
+  [25, 26],
+  [26, 27],
 ];
 
-/** Abstract system diagram that drifts gently toward the cursor. */
 function SystemField() {
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
     const svg = ref.current;
+
     if (!svg) return;
+
     let raf = 0;
-    let tx = 0;
-    let ty = 0;
-    let cx = 0;
-    let cy = 0;
-    const onMove = (e: PointerEvent) => {
-      const r = svg.getBoundingClientRect();
-      tx = ((e.clientX - (r.left + r.width / 2)) / r.width) * 2;
-      ty = ((e.clientY - (r.top + r.height / 2)) / r.height) * 2;
+
+    let targetX = 0;
+    let targetY = 0;
+
+    let currentX = 0;
+    let currentY = 0;
+
+    const onMove = (event: PointerEvent) => {
+      const rect = svg.getBoundingClientRect();
+
+      targetX = ((event.clientX - (rect.left + rect.width / 2)) / rect.width) * 1.5;
+
+      targetY = ((event.clientY - (rect.top + rect.height / 2)) / rect.height) * 1.5;
     };
+
     const tick = () => {
-      cx += (tx - cx) * 0.06;
-      cy += (ty - cy) * 0.06;
-      svg.querySelectorAll<SVGGElement>("[data-depth]").forEach((g) => {
-        const d = Number(g.dataset['depth']);
-        g.setAttribute("transform", `translate(${cx * d} ${cy * d})`);
+      currentX += (targetX - currentX) * 0.045;
+      currentY += (targetY - currentY) * 0.045;
+
+      svg.querySelectorAll<SVGGElement>("[data-depth]").forEach((group) => {
+        const depth = Number(group.dataset["depth"] ?? 1);
+
+        group.setAttribute("transform", `translate(${currentX * depth} ${currentY * depth})`);
       });
+
       raf = requestAnimationFrame(tick);
     };
+
     raf = requestAnimationFrame(tick);
-    window.addEventListener("pointermove", onMove, { passive: true });
+
+    window.addEventListener("pointermove", onMove, {
+      passive: true,
+    });
+
     return () => {
       cancelAnimationFrame(raf);
+
       window.removeEventListener("pointermove", onMove);
     };
   }, []);
@@ -78,49 +138,62 @@ function SystemField() {
       ref={ref}
       viewBox="0 0 100 100"
       preserveAspectRatio="xMidYMid slice"
-      aria-hidden
+      aria-hidden="true"
       className="h-full w-full"
     >
-      <g data-depth="2.4" stroke="var(--color-hairline)" strokeWidth="0.15">
-        {EDGES.map(([a, b], i) => (
-          <line
-            key={i}
-            x1={NODES[a]!.x}
-            y1={NODES[a]!.y}
-            x2={NODES[b]!.x}
-            y2={NODES[b]!.y}
-            strokeDasharray={i % 4 === 0 ? "1.5 2.5" : undefined}
-            style={
-              i % 4 === 0
-                ? { animation: `dash-flow ${6 + (i % 3)}s linear infinite` }
-                : undefined
-            }
-          />
-        ))}
-      </g>
-      <g data-depth="4">
-        {NODES.map((n, i) => (
-          <g key={i}>
-            <circle
-              cx={n.x}
-              cy={n.y}
-              r={i % 5 === 0 ? 0.7 : 0.38}
-              fill={i % 5 === 0 ? "var(--color-accent)" : "var(--color-muted-foreground)"}
-              opacity={i % 5 === 0 ? 0.9 : 0.55}
+      <g data-depth="1.8" stroke="var(--color-hairline)" strokeWidth="0.15" opacity="0.8">
+        {EDGES.map(([a, b], index) => {
+          const from = NODES[a]!;
+          const to = NODES[b]!;
+
+          return (
+            <line
+              key={index}
+              x1={from.x}
+              y1={from.y}
+              x2={to.x}
+              y2={to.y}
+              strokeDasharray={index % 4 === 0 ? "1.5 2.5" : undefined}
+              style={
+                index % 4 === 0
+                  ? {
+                      animation: `dash-flow ${7 + (index % 3)}s linear infinite`,
+                    }
+                  : undefined
+              }
             />
-            {i % 5 === 0 && (
+          );
+        })}
+      </g>
+
+      <g data-depth="3">
+        {NODES.map((node, index) => {
+          const active = index % 5 === 0;
+
+          return (
+            <g key={index}>
               <circle
-                cx={n.x}
-                cy={n.y}
-                r="2.2"
-                fill="none"
-                stroke="var(--color-accent)"
-                strokeWidth="0.1"
-                opacity="0.35"
+                cx={node.x}
+                cy={node.y}
+                r={active ? 0.65 : 0.34}
+                fill={active ? "var(--color-accent)" : "var(--color-muted-foreground)"}
+                opacity={active ? 0.78 : 0.42}
               />
-            )}
-          </g>
-        ))}
+
+              {active && (
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r="2"
+                  fill="none"
+                  stroke="var(--color-accent)"
+                  strokeWidth="0.1"
+                  opacity="0.28"
+                />
+              )}
+            </g>
+          );
+        })}
       </g>
     </svg>
   );
@@ -128,65 +201,71 @@ function SystemField() {
 
 export function Hero() {
   return (
-    <section className="grain relative min-h-[100svh] overflow-hidden pt-28">
-      <div className="pointer-events-none absolute inset-0 opacity-90">
+    <section className="grain relative min-h-[100svh] overflow-hidden pt-28 md:pt-32">
+      <div className="pointer-events-none absolute inset-0 opacity-75">
         <SystemField />
       </div>
+
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 70% at 15% 20%, transparent 30%, var(--color-background) 78%)",
+            "radial-gradient(100% 75% at 18% 22%, transparent 20%, var(--color-background) 82%)",
         }}
       />
 
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-12">
-        <div className="grid grid-cols-12 items-end gap-y-12">
+        <div className="grid grid-cols-12 gap-y-12">
           <div className="col-span-12 lg:col-span-9">
-            <p className="eyebrow mb-8 flex items-center gap-3">
-              <span className="inline-block h-px w-10 bg-border" />
+            <p className="eyebrow mb-7 flex items-center gap-3 md:mb-8">
+              <span className="inline-block h-px w-8 bg-border md:w-10" />
               Software Engineer — Bengaluru, India
             </p>
-            <h1 className="display text-[15vw] leading-[0.86] sm:text-[12vw] lg:text-[8.4vw]">
+
+            <h1 className="display max-w-4xl text-[19vw] leading-[0.88] sm:text-[13vw] md:text-[11vw] lg:text-[7.2vw]">
               KULDEEP
               <br />
               <span className="text-muted-foreground">MANDAL</span>
             </h1>
           </div>
 
-          <div className="col-span-12 mt-6 lg:col-span-8 lg:col-start-5">
-            <p className="max-w-xl font-display text-2xl leading-[1.18] tracking-tight text-foreground sm:text-3xl">
-              Building AI systems that{" "}
-              <span className="text-accent">actually ship</span>.
+          <div className="col-span-12 lg:col-span-7 lg:col-start-5">
+            <p className="max-w-xl font-display text-[1.65rem] leading-[1.12] tracking-[-0.025em] text-foreground sm:text-3xl md:text-[2.15rem]">
+              Building AI systems that <span className="text-accent">actually ship</span>.
             </p>
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
+
+            <p className="mt-4 max-w-md text-[16px] leading-7 text-muted-foreground">
               Backend and full-stack engineering, applied AI, and the plumbing in between.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-2.5 md:mt-9">
               <a
                 href="#work"
-                className="group inline-flex items-center gap-3 border border-foreground px-6 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+                className="group inline-flex items-center gap-3 border border-foreground px-5 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-foreground hover:text-background"
               >
                 Explore work
-                <span className="transition-transform group-hover:translate-x-1">↓</span>
+                <span className="transition-transform group-hover:translate-y-0.5">↓</span>
               </a>
+
               <a
                 href={GITHUB_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-3 border border-border px-6 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+                className="group inline-flex items-center gap-3 border border-border px-5 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
               >
                 View GitHub
-                <span className="transition-transform group-hover:translate-x-1">↗</span>
+                <span className="transition-transform group-hover:translate-x-0.5">↗</span>
               </a>
             </div>
           </div>
         </div>
 
-        <div className="mt-20 flex flex-wrap items-center justify-between gap-4 rule-t py-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+        {/* Hero metadata */}
+        <div className="mt-16 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rule-t py-5 font-mono text-[13px] font-medium uppercase leading-6 tracking-[0.13em] text-muted-foreground md:mt-20">
           <span>Currently at Atraya Technologies</span>
+
           <span className="hidden sm:inline">AI systems · Backend · Full-stack</span>
+
           <span className="text-accent">↓ scroll</span>
         </div>
       </div>

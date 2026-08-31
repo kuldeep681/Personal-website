@@ -1,375 +1,230 @@
 import { useEffect, useRef } from "react";
 
-type Point = {
-  x: number;
-  y: number;
-  baseX: number;
-  baseY: number;
-  phase: number;
-  speed: number;
-};
+const NODES = [
+  { x: 8, y: 12 },
+  { x: 24, y: 6 },
+  { x: 42, y: 16 },
+  { x: 61, y: 8 },
+  { x: 79, y: 18 },
+  { x: 94, y: 10 },
 
-const GRID_SPACING = 115;
-const MAX_DPR = 1.5;
+  { x: 15, y: 30 },
+  { x: 34, y: 25 },
+  { x: 52, y: 34 },
+  { x: 71, y: 27 },
+  { x: 88, y: 35 },
 
-const MOUSE_RADIUS = 240;
-const MOUSE_STRENGTH = 18;
+  { x: 5, y: 48 },
+  { x: 22, y: 44 },
+  { x: 41, y: 53 },
+  { x: 59, y: 46 },
+  { x: 77, y: 55 },
+  { x: 96, y: 48 },
 
-const LINE_OPACITY = 0.055;
-const NODE_OPACITY = 0.12;
+  { x: 13, y: 67 },
+  { x: 31, y: 62 },
+  { x: 49, y: 72 },
+  { x: 68, y: 64 },
+  { x: 86, y: 73 },
 
+  { x: 4, y: 86 },
+  { x: 23, y: 82 },
+  { x: 42, y: 92 },
+  { x: 62, y: 84 },
+  { x: 81, y: 93 },
+  { x: 96, y: 85 },
+];
+
+const EDGES: [number, number][] = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+
+  [0, 6],
+  [1, 7],
+  [2, 8],
+  [3, 9],
+  [4, 10],
+
+  [6, 7],
+  [7, 8],
+  [8, 9],
+  [9, 10],
+
+  [6, 11],
+  [6, 12],
+  [7, 12],
+  [7, 13],
+  [8, 13],
+  [8, 14],
+  [9, 14],
+  [9, 15],
+  [10, 15],
+  [10, 16],
+
+  [11, 12],
+  [12, 13],
+  [13, 14],
+  [14, 15],
+  [15, 16],
+
+  [11, 17],
+  [12, 18],
+  [13, 19],
+  [14, 20],
+  [15, 21],
+
+  [17, 18],
+  [18, 19],
+  [19, 20],
+  [20, 21],
+
+  [17, 22],
+  [18, 23],
+  [19, 24],
+  [20, 25],
+  [21, 26],
+
+  [22, 23],
+  [23, 24],
+  [24, 25],
+  [25, 26],
+  [26, 27],
+];
+
+/**
+ * Global technical network.
+ *
+ * Uses the same visual language as the original
+ * Hero SystemField:
+ *
+ * - thin network connections
+ * - sparse technical nodes
+ * - restrained amber highlights
+ * - slow cursor parallax
+ *
+ * The network sits behind the entire portfolio.
+ */
 export function BackgroundMesh() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  const mouseRef = useRef({
-    x: -1000,
-    y: -1000,
-    active: false,
-  });
-
-  const pointsRef = useRef<Point[]>([]);
+  const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const svg = ref.current;
 
-    if (!canvas) return;
+    if (!svg) return;
 
-    const ctx = canvas.getContext("2d");
+    let raf = 0;
 
-    if (!ctx) return;
+    let targetX = 0;
+    let targetY = 0;
 
-    let animationFrame = 0;
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
+    let currentX = 0;
+    let currentY = 0;
 
-    /*
-     * --------------------------------------------------------
-     * BUILD MESH
-     * --------------------------------------------------------
-     */
+    const onMove = (event: PointerEvent) => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-    const buildMesh = () => {
-      pointsRef.current = [];
-
-      const columns = Math.ceil(width / GRID_SPACING) + 2;
-      const rows = Math.ceil(height / GRID_SPACING) + 2;
-
-      const offsetX = -GRID_SPACING;
-      const offsetY = -GRID_SPACING;
-
-      for (let row = 0; row < rows; row++) {
-        for (let column = 0; column < columns; column++) {
-          const baseX = offsetX + column * GRID_SPACING;
-
-          const baseY = offsetY + row * GRID_SPACING;
-
-          /*
-           * Slight irregularity keeps the mesh
-           * from looking like a perfect CSS grid.
-           */
-          const jitterX = Math.sin(row * 1.73 + column * 0.91) * 12;
-
-          const jitterY = Math.cos(row * 1.17 + column * 1.43) * 10;
-
-          pointsRef.current.push({
-            x: baseX + jitterX,
-            y: baseY + jitterY,
-            baseX: baseX + jitterX,
-            baseY: baseY + jitterY,
-            phase: row * 0.73 + column * 1.17,
-            speed: 0.00035 + ((row + column) % 4) * 0.00008,
-          });
-        }
-      }
+      targetX = ((event.clientX - width / 2) / width) * 2;
+      targetY = ((event.clientY - height / 2) / height) * 2;
     };
 
-    /*
-     * --------------------------------------------------------
-     * RESIZE
-     * --------------------------------------------------------
-     */
+    const tick = () => {
+      currentX += (targetX - currentX) * 0.035;
+      currentY += (targetY - currentY) * 0.035;
 
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
+      const groups = svg.querySelectorAll<SVGGElement>("[data-depth]");
 
-      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      groups.forEach((group) => {
+        const depth = Number(group.dataset["depth"] ?? 1);
 
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
+        group.setAttribute("transform", `translate(${currentX * depth} ${currentY * depth})`);
+      });
 
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      buildMesh();
+      raf = requestAnimationFrame(tick);
     };
 
-    /*
-     * --------------------------------------------------------
-     * MOUSE
-     * --------------------------------------------------------
-     *
-     * The mouse DOES NOT move the mesh globally.
-     *
-     * It only creates a small local disturbance.
-     */
+    raf = requestAnimationFrame(tick);
 
-    const handlePointerMove = (event: PointerEvent) => {
-      mouseRef.current.x = event.clientX;
-      mouseRef.current.y = event.clientY;
-      mouseRef.current.active = true;
-    };
-
-    const handlePointerLeave = () => {
-      mouseRef.current.active = false;
-    };
-
-    /*
-     * --------------------------------------------------------
-     * DRAW
-     * --------------------------------------------------------
-     */
-
-    const draw = (time: number) => {
-      ctx.clearRect(0, 0, width, height);
-
-      const points = pointsRef.current;
-
-      const mouse = mouseRef.current;
-
-      /*
-       * Animate points.
-       */
-      for (const point of points) {
-        const ambientX = Math.sin(time * point.speed + point.phase) * 2.2;
-
-        const ambientY = Math.cos(time * point.speed * 0.9 + point.phase) * 2.2;
-
-        let targetX = point.baseX + ambientX;
-
-        let targetY = point.baseY + ambientY;
-
-        /*
-         * ----------------------------------------------------
-         * CURSOR DISTORTION
-         * ----------------------------------------------------
-         *
-         * Only points close to the cursor move.
-         *
-         * This creates the "living mesh" effect without
-         * making the entire background chase the cursor.
-         */
-
-        if (mouse.active) {
-          const dx = mouse.x - targetX;
-          const dy = mouse.y - targetY;
-
-          const distance = Math.hypot(dx, dy);
-
-          if (distance > 0 && distance < MOUSE_RADIUS) {
-            const influence = 1 - distance / MOUSE_RADIUS;
-
-            const easedInfluence = influence * influence;
-
-            /*
-             * Push the nearby mesh points
-             * gently away from the cursor.
-             */
-            targetX -= (dx / distance) * MOUSE_STRENGTH * easedInfluence;
-
-            targetY -= (dy / distance) * MOUSE_STRENGTH * easedInfluence;
-          }
-        }
-
-        /*
-         * Smoothly approach the calculated position.
-         */
-        point.x += (targetX - point.x) * 0.08;
-
-        point.y += (targetY - point.y) * 0.08;
-      }
-
-      /*
-       * ----------------------------------------------------
-       * CONNECTIONS
-       * ----------------------------------------------------
-       */
-
-      const columns = Math.ceil(width / GRID_SPACING) + 2;
-
-      for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-
-        if (!point) continue;
-
-        const column = i % columns;
-
-        /*
-         * Horizontal connection.
-         */
-        if (column < columns - 1) {
-          const right = points[i + 1];
-
-          if (right) {
-            drawLine(ctx, point, right, LINE_OPACITY);
-          }
-        }
-
-        /*
-         * Vertical connection.
-         */
-        const below = points[i + columns];
-
-        if (below) {
-          drawLine(ctx, point, below, LINE_OPACITY);
-        }
-
-        /*
-         * Occasional diagonal connection.
-         *
-         * This gives the mesh the more organic
-         * technical-network appearance.
-         */
-        if (column < columns - 1 && Math.floor(i / columns) % 2 === 0) {
-          const diagonal = points[i + columns + 1];
-
-          if (diagonal) {
-            drawLine(ctx, point, diagonal, LINE_OPACITY * 0.7);
-          }
-        }
-      }
-
-      /*
-       * ----------------------------------------------------
-       * NODES
-       * ----------------------------------------------------
-       */
-
-      for (const point of points) {
-        /*
-         * Determine whether this node is near
-         * the cursor.
-         */
-        let nodeOpacity = NODE_OPACITY;
-
-        let nodeRadius = 1.2;
-
-        if (mouse.active) {
-          const distance = Math.hypot(mouse.x - point.x, mouse.y - point.y);
-
-          if (distance < MOUSE_RADIUS) {
-            const influence = 1 - distance / MOUSE_RADIUS;
-
-            nodeOpacity += influence * 0.16;
-
-            nodeRadius += influence * 1.2;
-          }
-        }
-
-        ctx.beginPath();
-
-        ctx.arc(point.x, point.y, nodeRadius, 0, Math.PI * 2);
-
-        ctx.fillStyle = `rgba(220, 225, 232, ${nodeOpacity})`;
-
-        ctx.fill();
-      }
-
-      /*
-       * ----------------------------------------------------
-       * SUBTLE CURSOR NODE
-       * ----------------------------------------------------
-       *
-       * A very faint point appears around the cursor.
-       * It gives the mesh a responsive feeling without
-       * creating a flashy cursor effect.
-       */
-
-      if (mouse.active) {
-        const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 85);
-
-        gradient.addColorStop(0, "rgba(220, 225, 232, 0.055)");
-
-        gradient.addColorStop(1, "rgba(220, 225, 232, 0)");
-
-        ctx.fillStyle = gradient;
-
-        ctx.fillRect(mouse.x - 85, mouse.y - 85, 170, 170);
-      }
-
-      animationFrame = requestAnimationFrame(draw);
-    };
-
-    /*
-     * --------------------------------------------------------
-     * LINE HELPER
-     * --------------------------------------------------------
-     */
-
-    const drawLine = (
-      context: CanvasRenderingContext2D,
-      from: Point,
-      to: Point,
-      opacity: number,
-    ) => {
-      context.beginPath();
-
-      context.moveTo(from.x, from.y);
-
-      context.lineTo(to.x, to.y);
-
-      context.strokeStyle = `rgba(170, 178, 190, ${opacity})`;
-
-      context.lineWidth = 0.7;
-
-      context.stroke();
-    };
-
-    /*
-     * --------------------------------------------------------
-     * INITIALIZE
-     * --------------------------------------------------------
-     */
-
-    resize();
-
-    window.addEventListener("resize", resize);
-
-    window.addEventListener("pointermove", handlePointerMove, { passive: true });
-
-    window.addEventListener("pointerleave", handlePointerLeave);
-
-    animationFrame = requestAnimationFrame(draw);
-
-    /*
-     * --------------------------------------------------------
-     * CLEANUP
-     * --------------------------------------------------------
-     */
+    window.addEventListener("pointermove", onMove, {
+      passive: true,
+    });
 
     return () => {
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(raf);
 
-      window.removeEventListener("resize", resize);
-
-      window.removeEventListener("pointermove", handlePointerMove);
-
-      window.removeEventListener("pointerleave", handlePointerLeave);
+      window.removeEventListener("pointermove", onMove);
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full"
-      style={{
-        opacity: 0.9,
-      }}
-    />
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <svg
+        ref={ref}
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid slice"
+        className="h-full w-full"
+      >
+        {/* Network connections */}
+        <g data-depth="1.2" stroke="var(--color-hairline)" strokeWidth="0.12" opacity="0.72">
+          {EDGES.map(([a, b], index) => {
+            const from = NODES[a]!;
+            const to = NODES[b]!;
+
+            return (
+              <line
+                key={`${a}-${b}`}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+                strokeDasharray={index % 7 === 0 ? "1.5 3" : undefined}
+                style={
+                  index % 7 === 0
+                    ? {
+                        animation: `dash-flow ${8 + (index % 4)}s linear infinite`,
+                      }
+                    : undefined
+                }
+              />
+            );
+          })}
+        </g>
+
+        {/* Nodes */}
+        <g data-depth="2">
+          {NODES.map((node, index) => {
+            const active = index % 8 === 0;
+
+            return (
+              <g key={index}>
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={active ? 0.48 : 0.25}
+                  fill={active ? "var(--color-accent)" : "var(--color-muted-foreground)"}
+                  opacity={active ? 0.62 : 0.3}
+                />
+
+                {active && (
+                  <circle
+                    cx={node.x}
+                    cy={node.y}
+                    r="1.8"
+                    fill="none"
+                    stroke="var(--color-accent)"
+                    strokeWidth="0.08"
+                    opacity="0.18"
+                  />
+                )}
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    </div>
   );
 }
 

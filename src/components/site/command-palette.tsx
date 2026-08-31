@@ -6,90 +6,148 @@ export function CommandPalette({
   setOpen,
 }: {
   open: boolean;
-  setOpen: (v: boolean) => void;
+  setOpen: (value: boolean) => void;
 }) {
-  const [q, setQ] = useState("");
+  const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
 
-  const results = useMemo(
-    () => NAV_ITEMS.filter((i) => i.label.toLowerCase().includes(q.trim().toLowerCase())),
-    [q],
-  );
+  const results = useMemo(() => {
+    const value = query.trim().toLowerCase();
+
+    if (!value) {
+      return NAV_ITEMS;
+    }
+
+    return NAV_ITEMS.filter((item) => item.label.toLowerCase().includes(value));
+  }, [query]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
         setOpen(!open);
+        return;
       }
-      if (e.key === "Escape") setOpen(false);
+
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, [open, setOpen]);
 
   useEffect(() => {
     if (open) {
-      setQ("");
+      setQuery("");
       setActive(0);
     }
   }, [open]);
 
-  if (!open) return null;
+  useEffect(() => {
+    if (active >= results.length) {
+      setActive(Math.max(0, results.length - 1));
+    }
+  }, [active, results.length]);
 
-  const go = (i: number) => {
-    const item = results[i];
-    if (!item) return;
+  if (!open) {
+    return null;
+  }
+
+  const go = (index: number) => {
+    const item = results[index];
+
+    if (!item) {
+      return;
+    }
+
     setOpen(false);
-    if (item.external) window.open(item.href, "_blank");
-    else window.location.hash = item.href;
+
+    if (item.external) {
+      window.open(item.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    window.location.hash = item.href;
   };
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-start justify-center bg-background/70 px-4 pt-[18vh] backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-start justify-center bg-background/75 px-4 pt-[14vh] backdrop-blur-md"
+      role="presentation"
       onClick={() => setOpen(false)}
     >
       <div
-        className="w-full max-w-lg border border-border bg-popover"
-        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md overflow-hidden border border-border bg-popover shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-3 border-b border-hairline px-4">
-          <span className="font-mono text-[11px] text-accent">›</span>
+          <span className="font-mono text-[13px] font-medium text-accent">›</span>
+
           <input
             autoFocus
-            value={q}
-            onChange={(e) => {
-              setQ(e.target.value);
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
               setActive(0);
             }}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown")
-                setActive((a) => Math.min(a + 1, results.length - 1));
-              if (e.key === "ArrowUp") setActive((a) => Math.max(a - 1, 0));
-              if (e.key === "Enter") go(active);
+            onKeyDown={(event) => {
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+
+                setActive((current) => Math.min(current + 1, results.length - 1));
+              }
+
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+
+                setActive((current) => Math.max(current - 1, 0));
+              }
+
+              if (event.key === "Enter") {
+                event.preventDefault();
+                go(active);
+              }
             }}
             placeholder="Jump to a section"
-            className="w-full bg-transparent py-4 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            className="w-full bg-transparent py-4 font-mono text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
           />
+
+          <kbd className="hidden border border-border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground sm:inline">
+            esc
+          </kbd>
         </div>
-        <div className="py-1">
+
+        <div className="max-h-[50vh] overflow-y-auto py-1.5">
           {results.length === 0 && (
-            <p className="px-4 py-4 font-mono text-xs text-muted-foreground">No matches.</p>
+            <p className="px-4 py-5 font-mono text-[12px] uppercase tracking-[0.12em] text-muted-foreground">
+              No matches.
+            </p>
           )}
-          {results.map((item, i) => (
+
+          {results.map((item, index) => (
             <button
               key={item.label}
-              onMouseEnter={() => setActive(i)}
-              onClick={() => go(i)}
-              className={`flex w-full items-baseline gap-3 px-4 py-2.5 text-left font-mono text-[11px] uppercase tracking-[0.16em] transition-colors ${
-                i === active
+              type="button"
+              onMouseEnter={() => setActive(index)}
+              onClick={() => go(index)}
+              className={`flex w-full items-baseline gap-4 px-4 py-3 text-left font-mono text-[12px] font-medium uppercase tracking-[0.14em] transition-colors ${
+                index === active
                   ? "bg-secondary text-foreground"
-                  : "text-muted-foreground"
+                  : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
               }`}
             >
-              <span className="text-accent/70">{item.index}</span>
-              {item.label}
+              <span className="text-accent/80">{item.index}</span>
+
+              <span>{item.label}</span>
+
               {item.external && <span className="ml-auto text-muted-foreground">↗</span>}
             </button>
           ))}

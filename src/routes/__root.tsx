@@ -19,22 +19,22 @@ function NotFoundComponent() {
 
       <div className="relative z-10 flex min-h-screen items-center justify-center">
         <div className="max-w-md text-center">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            404 / NOT FOUND
-          </p>
+          <p className="eyebrow mb-3">404 / NOT FOUND</p>
 
-          <h1 className="text-7xl font-bold text-foreground">404</h1>
+          <h1 className="display text-7xl text-foreground">404</h1>
 
-          <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+          <h2 className="mt-5 font-display text-xl font-semibold text-foreground">
+            Page not found
+          </h2>
 
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
             The page you're looking for doesn't exist or has been moved.
           </p>
 
-          <div className="mt-6">
+          <div className="mt-7">
             <Link
               to="/"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex items-center justify-center border border-foreground px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-foreground hover:text-background"
             >
               Go home
             </Link>
@@ -56,33 +56,31 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
       <div className="relative z-10 flex min-h-screen items-center justify-center">
         <div className="max-w-md text-center">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            SYSTEM / ERROR
-          </p>
+          <p className="eyebrow mb-3">SYSTEM / ERROR</p>
 
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
             This page didn't load
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
             Something went wrong on our end. You can try refreshing or head back home.
           </p>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <div className="mt-7 flex flex-wrap justify-center gap-2.5">
             <button
               type="button"
               onClick={() => {
                 router.invalidate();
                 reset();
               }}
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex items-center justify-center border border-foreground px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-foreground hover:text-background"
             >
               Try again
             </button>
 
             <a
               href="/"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+              className="inline-flex items-center justify-center border border-border px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
             >
               Go home
             </a>
@@ -182,17 +180,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen bg-background">
         {/* 
-          Global interactive mesh.
-          
-          It sits behind the entire portfolio and never
-          captures pointer events.
+          Global technical network.
+
+          This is intentionally behind every section.
+          Hero has its own original SystemField on top.
         */}
         <BackgroundMesh />
 
         {/* 
-          All route content stays above the mesh.
+          All actual page content remains above
+          the global network.
         */}
         <main className="relative z-10">
           <Outlet />

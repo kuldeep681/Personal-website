@@ -11,20 +11,39 @@ import { Kernel } from "@/components/site/kernel";
 import { CommandPalette } from "@/components/site/command-palette";
 
 const TITLE = "Kuldeep Mandal — Software Engineer, AI Systems";
+
 const DESC =
   "Kuldeep Mandal is a software engineer in Bengaluru building AI systems, backend services and full-stack products that actually ship.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: TITLE },
-      { name: "description", content: DESC },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESC },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      {
+        title: TITLE,
+      },
+      {
+        name: "description",
+        content: DESC,
+      },
+      {
+        property: "og:title",
+        content: TITLE,
+      },
+      {
+        property: "og:description",
+        content: DESC,
+      },
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
     ],
   }),
+
   component: Index,
 });
 
@@ -32,8 +51,9 @@ function Index() {
   const [paletteOpen, setPaletteOpen] = useState(false);
 
   return (
-    <div id="top" className="min-h-screen bg-background">
+    <div id="top" className="min-h-screen bg-transparent">
       <Nav onCommand={() => setPaletteOpen(true)} />
+
       <main>
         <Hero />
         <Projects />
@@ -41,8 +61,11 @@ function Index() {
         <About />
         <Lab />
       </main>
+
       <Contact />
+
       <Kernel />
+
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} />
     </div>
   );

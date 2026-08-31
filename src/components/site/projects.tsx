@@ -43,53 +43,58 @@ const STAGES = [
 
 function PipelineFigure() {
   const [activeId, setActiveId] = useState(STAGES[0]!.id);
-  const idx = STAGES.findIndex((s) => s.id === activeId);
+
+  const idx = STAGES.findIndex((stage) => stage.id === activeId);
   const active = STAGES[idx]!;
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-20">
       <ol className="relative">
-        {STAGES.map((s, i) => {
-          const on = i <= idx;
+        {STAGES.map((stage, index) => {
+          const completed = index <= idx;
+          const activeStage = stage.id === activeId;
+
           return (
-            <li key={s.id} className="relative pl-10">
-              {i < STAGES.length - 1 && (
+            <li key={stage.id} className="relative pl-9">
+              {index < STAGES.length - 1 && (
                 <span
-                  className="absolute left-[7px] top-5 h-full w-px"
+                  className="absolute left-[6px] top-[22px] h-full w-px"
                   style={{
-                    background: on
-                      ? "color-mix(in oklab, var(--color-accent) 55%, transparent)"
+                    background: completed
+                      ? "color-mix(in oklab, var(--color-accent) 50%, transparent)"
                       : "var(--color-hairline)",
-                    transition: "background 0.5s ease",
+                    transition: "background 0.4s ease",
                   }}
                 />
               )}
+
               <button
                 type="button"
-                onMouseEnter={() => setActiveId(s.id)}
-                onFocus={() => setActiveId(s.id)}
-                onClick={() => setActiveId(s.id)}
+                onMouseEnter={() => setActiveId(stage.id)}
+                onFocus={() => setActiveId(stage.id)}
+                onClick={() => setActiveId(stage.id)}
                 className="group block w-full py-3 text-left"
               >
                 <span
-                  className="absolute left-0 top-[18px] block h-[15px] w-[15px] rounded-full border"
+                  className="absolute left-0 top-[18px] block h-[13px] w-[13px] rounded-full border"
                   style={{
-                    borderColor: on ? "var(--color-accent)" : "var(--color-border)",
-                    background:
-                      s.id === activeId ? "var(--color-accent)" : "var(--color-background)",
-                    transition: "all 0.35s ease",
+                    borderColor: completed ? "var(--color-accent)" : "var(--color-border)",
+                    background: activeStage ? "var(--color-accent)" : "var(--color-background)",
+                    transition: "all 0.3s ease",
                   }}
                 />
+
                 <span className="flex items-baseline gap-3">
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    0{i + 1}
+                  <span className="font-mono text-[13px] font-medium tracking-[0.08em] text-muted-foreground">
+                    0{index + 1}
                   </span>
+
                   <span
-                    className={`font-display text-2xl tracking-tight transition-colors sm:text-3xl ${
-                      s.id === activeId ? "text-foreground" : "text-muted-foreground"
+                    className={`font-display text-[1.2rem] tracking-tight transition-colors sm:text-[1.35rem] ${
+                      activeStage ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
-                    {s.label.toUpperCase()}
+                    {stage.label.toUpperCase()}
                   </span>
                 </span>
               </button>
@@ -98,19 +103,22 @@ function PipelineFigure() {
         })}
       </ol>
 
-      <div className="lg:sticky lg:top-32 lg:self-start">
-        <div className="rule-t pt-6">
+      <div className="lg:sticky lg:top-28 lg:self-start">
+        <div className="rule-t pt-5">
           <p className="eyebrow">
             Stage {String(idx + 1).padStart(2, "0")} / {STAGES.length}
           </p>
-          <p className="mt-5 font-display text-xl leading-snug tracking-tight text-foreground">
+
+          <p className="mt-4 max-w-lg font-display text-[1.15rem] leading-snug tracking-tight text-foreground sm:text-[1.25rem]">
             {active.note}
           </p>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+
+          <p className="mt-3 max-w-md text-[17px] leading-7 text-muted-foreground">
             {active.detail}
           </p>
         </div>
-        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+
+        <div className="mt-7 flex max-w-lg flex-wrap gap-x-5 gap-y-2 font-mono text-[12px] font-medium uppercase tracking-[0.11em] text-muted-foreground">
           <span>Python</span>
           <span>FastAPI</span>
           <span>Vector search</span>
@@ -132,38 +140,42 @@ const FEATURES = [
 
 function ChurnFigure() {
   const [hover, setHover] = useState<string | null>(null);
-  const shown = FEATURES.find((f) => f.name === hover);
+
+  const shown = FEATURES.find((feature) => feature.name === hover);
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
       <div>
         <p className="eyebrow mb-6">Feature contribution — illustrative</p>
+
         <div className="space-y-5">
-          {FEATURES.map((f) => {
-            const pct = Math.abs(f.weight) * 100;
-            const positive = f.weight > 0;
+          {FEATURES.map((feature) => {
+            const pct = Math.abs(feature.weight) * 100;
+            const positive = feature.weight > 0;
+
             return (
               <div
-                key={f.name}
-                onMouseEnter={() => setHover(f.name)}
+                key={feature.name}
+                onMouseEnter={() => setHover(feature.name)}
                 onMouseLeave={() => setHover(null)}
                 className="cursor-default"
               >
-                <div className="flex items-baseline justify-between font-mono text-[11px] uppercase tracking-[0.14em]">
+                <div className="flex items-baseline justify-between font-mono text-[13px] font-medium uppercase tracking-[0.1em]">
                   <span
-                    className={
-                      hover === f.name ? "text-foreground" : "text-muted-foreground"
-                    }
+                    className={hover === feature.name ? "text-foreground" : "text-muted-foreground"}
                   >
-                    {f.name}
+                    {feature.name}
                   </span>
+
                   <span className={positive ? "text-accent" : "text-muted-foreground"}>
-                    {f.weight > 0 ? "+" : ""}
-                    {f.weight.toFixed(2)}
+                    {feature.weight > 0 ? "+" : ""}
+                    {feature.weight.toFixed(2)}
                   </span>
                 </div>
+
                 <div className="relative mt-2 h-px w-full bg-hairline">
                   <span className="absolute left-1/2 top-[-3px] h-[7px] w-px bg-border" />
+
                   <span
                     className="absolute top-[-1px] h-[3px] transition-all duration-500"
                     style={{
@@ -172,7 +184,7 @@ function ChurnFigure() {
                       background: positive
                         ? "var(--color-accent)"
                         : "var(--color-muted-foreground)",
-                      opacity: hover && hover !== f.name ? 0.3 : 1,
+                      opacity: hover && hover !== feature.name ? 0.28 : 1,
                     }}
                   />
                 </div>
@@ -180,25 +192,29 @@ function ChurnFigure() {
             );
           })}
         </div>
-        <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+
+        <p className="mt-6 font-mono text-[13px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
           ← retains · churns →
         </p>
       </div>
 
-      <div className="lg:sticky lg:top-32 lg:self-start">
-        <div className="rule-t pt-6">
-          <p className="font-display text-xl leading-snug tracking-tight text-foreground">
+      <div className="lg:sticky lg:top-28 lg:self-start">
+        <div className="rule-t pt-5">
+          <p className="max-w-lg font-display text-[1.15rem] leading-snug tracking-tight text-foreground sm:text-[1.25rem]">
             {shown
-              ? `${shown.name} pushes the prediction ${shown.weight > 0 ? "toward churn" : "toward retention"}.`
+              ? `${shown.name} pushes the prediction ${
+                  shown.weight > 0 ? "toward churn" : "toward retention"
+                }.`
               : "A prediction is only useful if you can explain why it was made."}
           </p>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            The system pairs a gradient-boosted classifier with per-prediction
-            explainability, so a churn score arrives with its reasoning attached rather
-            than as an opaque number.
+
+          <p className="mt-3 max-w-md text-[17px] leading-7 text-muted-foreground">
+            The system pairs a gradient-boosted classifier with per-prediction explainability, so a
+            churn score arrives with its reasoning attached rather than as an opaque number.
           </p>
         </div>
-        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+
+        <div className="mt-7 flex max-w-lg flex-wrap gap-x-5 gap-y-2 font-mono text-[12px] font-medium uppercase tracking-[0.11em] text-muted-foreground">
           <span>Python</span>
           <span>scikit-learn</span>
           <span>Pandas</span>
@@ -220,28 +236,34 @@ function ProjectCase({
   blurb: string;
   children: React.ReactNode;
 }) {
-  const r = useReveal();
+  const reveal = useReveal();
+
   return (
-    <article ref={r.ref} className={`${r.className} rule-t pt-10 md:pt-16`}>
-      <div className="grid grid-cols-12 gap-y-8">
-        <div className="col-span-12 lg:col-span-3">
-          <p className="font-mono text-[11px] tracking-[0.2em] text-accent">{index}</p>
+    <article ref={reveal.ref} className={`${reveal.className} rule-t pt-8 md:pt-12`}>
+      <div className="grid grid-cols-12 gap-y-7 lg:gap-x-8">
+        <div className="col-span-12 lg:col-span-2">
+          <p className="font-mono text-[13px] font-medium tracking-[0.14em] text-accent">{index}</p>
         </div>
-        <div className="col-span-12 lg:col-span-9">
-          <h3 className="display max-w-3xl text-[9vw] sm:text-[6vw] lg:text-[3.8vw]">
-            {title}
-          </h3>
-          <p className="mt-6 max-w-lg text-sm leading-relaxed text-muted-foreground">
-            {blurb}
-          </p>
-          <div className="mt-14">{children}</div>
+
+        <div className="col-span-12 lg:col-span-10">
+          <div className="max-w-4xl">
+            <h3 className="display text-[7.5vw] leading-[0.92] sm:text-[5.2vw] lg:text-[3vw]">
+              {title}
+            </h3>
+
+            <p className="mt-5 max-w-xl text-[17px] leading-7 text-muted-foreground">{blurb}</p>
+          </div>
+
+          <div className="mt-12 md:mt-14">{children}</div>
+
           <a
             href={GITHUB_URL}
             target="_blank"
             rel="noreferrer"
-            className="mt-14 inline-flex items-center gap-3 border-b border-border pb-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+            className="mt-12 inline-flex items-center gap-3 border-b border-border pb-1 font-mono text-[13px] font-medium uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
           >
-            Source on GitHub <span>↗</span>
+            Source on GitHub
+            <span>↗</span>
           </a>
         </div>
       </div>
@@ -251,19 +273,24 @@ function ProjectCase({
 
 export function Projects() {
   const head = useReveal();
+
   return (
-    <section id="work" className="mx-auto max-w-[1400px] scroll-mt-24 px-6 py-28 md:px-12 md:py-40">
-      <div ref={head.ref} className={`${head.className} mb-20 flex items-end justify-between gap-8`}>
+    <section id="work" className="mx-auto max-w-[1400px] scroll-mt-24 px-6 py-24 md:px-12 md:py-32">
+      <div
+        ref={head.ref}
+        className={`${head.className} mb-16 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between md:mb-20`}
+      >
         <h2 className="eyebrow">Selected work</h2>
-        <p className="max-w-xs text-right text-xs leading-relaxed text-muted-foreground">
+
+        <p className="max-w-sm text-[17px] leading-7 text-muted-foreground sm:text-right">
           Interactive representations of engineering work — not live deployments.
         </p>
       </div>
 
-      <div className="space-y-32 md:space-y-48">
+      <div className="space-y-28 md:space-y-36">
         <ProjectCase
           index="01"
-          title={"AI TICKET WORKFLOW ENGINE"}
+          title="AI TICKET WORKFLOW ENGINE"
           blurb="A retrieval-grounded pipeline that reads a support ticket, understands it, and drafts a reply a human can trust. Walk the pipeline below."
         >
           <PipelineFigure />
@@ -271,7 +298,7 @@ export function Projects() {
 
         <ProjectCase
           index="02"
-          title={"CUSTOMER CHURN ML SYSTEM"}
+          title="CUSTOMER CHURN ML SYSTEM"
           blurb="A churn model built around explainability first. Hover a feature to see how it moves a single prediction."
         >
           <ChurnFigure />
