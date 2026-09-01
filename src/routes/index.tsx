@@ -5,7 +5,6 @@ import { Hero } from "@/components/site/hero";
 import { Projects } from "@/components/site/projects";
 import { HowIThink } from "@/components/site/how-i-think";
 import { About } from "@/components/site/about";
-import { Lab } from "@/components/site/lab";
 import { Contact } from "@/components/site/contact";
 import { Kernel } from "@/components/site/kernel";
 import { CommandPalette } from "@/components/site/command-palette";
@@ -59,7 +58,6 @@ function Index() {
         <Projects />
         <HowIThink />
         <About />
-        <Lab />
       </main>
 
       <Contact />
