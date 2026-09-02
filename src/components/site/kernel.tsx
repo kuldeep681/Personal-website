@@ -3,7 +3,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { GITHUB_URL } from "./data";
+import {
+  CV_URL,
+  GITHUB_URL,
+  LINKEDIN_URL,
+  REDDIT_URL,
+} from "./data";
 
 type Point = {
   x: number;
@@ -24,11 +29,6 @@ const DISPLAY_SIZE = 32;
 const WHITE = "#F0F2F5";
 const DARK = "#090A0C";
 
-const LINKEDIN_URL =
-  "https://www.linkedin.com/in/kuldeep-mandal175514";
-
-const REDDIT_URL =
-  "https://www.reddit.com/u/Inevitable-Bear-/s/fjEtp9s7Wd";
 
 /*
  * ==========================================================
@@ -54,6 +54,8 @@ const KERNEL_ACTIONS: KernelAction[] = [
   },
   {
     label: "View CV",
+    href: CV_URL,
+    external: true,
   },
 ];
 

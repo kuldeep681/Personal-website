@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { GITHUB_URL } from "./data";
+import {
+  GITHUB_URL,
+  LINKEDIN_URL,
+  REDDIT_URL,
+} from "./data";
 
-const LINKEDIN_URL = "https://www.linkedin.com/in/kuldeep-mandal175514";
-const REDDIT_URL =
-  "https://www.reddit.com/u/Inevitable-Bear-/s/fjEtp9s7Wd";
 
 const LINKS = [
   { label: "Work", href: "#work" },

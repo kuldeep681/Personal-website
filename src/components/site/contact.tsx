@@ -1,10 +1,10 @@
-import { GITHUB_URL } from "./data";
+import {
+  EMAIL,
+  GITHUB_URL,
+  LINKEDIN_URL,
+  REDDIT_URL,
+} from "./data";
 import { useReveal } from "./use-reveal";
-
-const EMAIL = "kuldeepmandal175514@gmail.com";
-const LINKEDIN_URL = "https://www.linkedin.com/in/kuldeep-mandal175514";
-const REDDIT_URL =
-  "https://www.reddit.com/u/Inevitable-Bear-/s/fjEtp9s7Wd";
 
 export function Contact() {
   const r = useReveal();

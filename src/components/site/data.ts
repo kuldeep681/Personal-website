@@ -1,11 +1,14 @@
-export const GITHUB_URL = "https://github.com/kuldeepmandal";
+export const GITHUB_URL = "https://github.com/kuldeep681";
 
 export const LINKEDIN_URL =
   "https://www.linkedin.com/in/kuldeep-mandal175514";
 
-export const REDDIT_URL = "https://www.reddit.com/";
+export const REDDIT_URL =
+  "https://www.reddit.com/u/Inevitable-Bear-/s/ws5AtXx9wX";
 
-export const EMAIL = "hello@kuldeepmandal.dev";
+export const EMAIL = "kuldeepmandal175514@gmail.com";
+
+export const CV_URL = "https://www.google.com/";
 
 export type NavItem = {
   index: string;
@@ -19,7 +22,8 @@ export type NavItem = {
  * MAIN NAVIGATION
  * ----------------------------------------------------------
  *
- * Lab removed.
+ * Primary portfolio navigation.
+ * External URLs are kept in the constants above.
  */
 
 export const NAV_ITEMS: NavItem[] = [
@@ -63,9 +67,8 @@ export const NAV_ITEMS: NavItem[] = [
  *
  * Core portfolio navigation.
  *
- * Additional social/contact destinations:
- * LinkedIn, Reddit and Email are added by Kernel
- * as radial actions.
+ * Social/contact destinations are kept in the shared
+ * URL constants so Kernel does not duplicate URLs.
  *
  * Lab intentionally removed.
  */
@@ -100,7 +103,8 @@ export const KERNEL_MENU: NavItem[] = [
   {
     index: "06",
     label: "Download CV",
-    href: "#contact",
+    href: CV_URL,
+    external: true,
   },
   {
     index: "07",
