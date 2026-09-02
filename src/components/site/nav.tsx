@@ -1,10 +1,29 @@
 import { useEffect, useState } from "react";
+import { GITHUB_URL } from "./data";
+
+const LINKEDIN_URL = "https://www.linkedin.com/in/kuldeep-mandal175514";
+const REDDIT_URL =
+  "https://www.reddit.com/u/Inevitable-Bear-/s/fjEtp9s7Wd";
 
 const LINKS = [
   { label: "Work", href: "#work" },
-  { label: "Engineering", href: "#engineering" },
+  { label: "Experience", href: "#experience" },
   { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  {
+    label: "GitHub",
+    href: GITHUB_URL,
+    external: true,
+  },
+  {
+    label: "LinkedIn",
+    href: LINKEDIN_URL,
+    external: true,
+  },
+  {
+    label: "Reddit",
+    href: REDDIT_URL,
+    external: true,
+  },
 ];
 
 export function Nav({ onCommand }: { onCommand: () => void }) {
@@ -38,24 +57,42 @@ export function Nav({ onCommand }: { onCommand: () => void }) {
         {/* Logo */}
         <a
           href="#top"
-          className="group relative font-display text-[14px] font-semibold uppercase tracking-[0.25em] text-foreground transition-opacity duration-300 hover:opacity-80"
+          className="group relative flex shrink-0 items-center gap-2 font-display text-[14px] font-semibold uppercase tracking-[0.25em] text-foreground transition-colors duration-300 hover:text-accent"
         >
-          Kuldeep Mandal
+          <span className="relative flex h-2 w-2 items-center justify-center">
+            <span className="h-1.5 w-1.5 bg-accent transition-transform duration-300 group-hover:scale-125" />
 
-          <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent transition-all duration-500 ease-out group-hover:w-full" />
+            <span className="absolute inset-0 rounded-full border border-accent/0 transition-all duration-500 group-hover:scale-150 group-hover:border-accent/40" />
+          </span>
+
+          <span>Kuldeep Mandal</span>
+
+          <span className="absolute -bottom-1 left-4 h-px w-0 bg-accent transition-all duration-500 ease-out group-hover:w-[calc(100%-1rem)]" />
         </a>
 
         {/* Navigation */}
-        <nav className="hidden items-center gap-7 md:flex lg:gap-8">
+        <nav className="hidden items-center gap-5 md:flex lg:gap-7">
           {LINKS.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="group relative py-1 font-mono text-[13px] font-semibold uppercase tracking-[0.15em] text-muted-foreground transition-colors duration-300 hover:text-foreground"
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noreferrer" : undefined}
+              className="group relative flex items-center gap-1.5 px-1 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-colors duration-300 hover:text-foreground lg:text-[13px]"
             >
-              {link.label}
+              <span>{link.label}</span>
 
-              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-accent transition-all duration-400 ease-out group-hover:w-full" />
+              {link.external && (
+                <span className="text-[10px] text-foreground/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent">
+                  ↗
+                </span>
+              )}
+
+              {/* Animated underline */}
+              <span className="absolute -bottom-0.5 left-1 h-px w-0 bg-accent transition-all duration-400 ease-out group-hover:w-[calc(100%-0.5rem)]" />
+
+              {/* Small hover marker */}
+              <span className="absolute -left-1 top-1/2 h-1 w-0 -translate-y-1/2 bg-accent opacity-0 transition-all duration-300 group-hover:w-0.5 group-hover:opacity-100" />
             </a>
           ))}
         </nav>
@@ -65,7 +102,7 @@ export function Nav({ onCommand }: { onCommand: () => void }) {
           type="button"
           onClick={onCommand}
           aria-label="Open command palette"
-          className="group flex items-center gap-2 border border-border px-3 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 hover:border-accent hover:text-accent active:scale-[0.97]"
+          className="group flex shrink-0 items-center gap-2 border border-border px-3 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-accent hover:text-accent hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)] active:translate-y-0 active:scale-[0.97]"
         >
           <span className="hidden sm:inline">Search</span>
 

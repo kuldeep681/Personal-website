@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { KERNEL_MENU } from "./data";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { GITHUB_URL } from "./data";
 
 type Point = {
   x: number;
@@ -9,9 +13,8 @@ type Point = {
 type BotState = "idle" | "blink";
 
 type KernelAction = {
-  index: string;
   label: string;
-  href: string;
+  href?: string;
   external?: boolean;
 };
 
@@ -24,223 +27,60 @@ const DARK = "#090A0C";
 const LINKEDIN_URL =
   "https://www.linkedin.com/in/kuldeep-mandal175514";
 
-const REDDIT_URL = "https://www.reddit.com/";
-
-const EMAIL_URL = "mailto:hello@kuldeepmandal.dev";
+const REDDIT_URL =
+  "https://www.reddit.com/u/Inevitable-Bear-/s/fjEtp9s7Wd";
 
 /*
- * ----------------------------------------------------------
+ * ==========================================================
  * KERNEL ACTIONS
- * ----------------------------------------------------------
+ * ==========================================================
  */
 
 const KERNEL_ACTIONS: KernelAction[] = [
-  ...KERNEL_MENU,
   {
-    index: "08",
+    label: "GitHub",
+    href: GITHUB_URL,
+    external: true,
+  },
+  {
     label: "LinkedIn",
     href: LINKEDIN_URL,
     external: true,
   },
   {
-    index: "09",
     label: "Reddit",
     href: REDDIT_URL,
     external: true,
   },
   {
-    index: "10",
-    label: "Email",
-    href: EMAIL_URL,
-    external: true,
+    label: "View CV",
   },
 ];
 
 /*
- * ----------------------------------------------------------
- * RADIAL WHEEL
- * ----------------------------------------------------------
- *
- * Clean GTA-style radial navigation.
- *
- * Important design decisions:
- *
- * - One circular surface.
- * - Only radial separators.
- * - No concentric decorative rings.
- * - Transparent surface.
- * - Background remains visible.
- * - Background behind wheel is blurred.
- * - Kernel stays in the exact centre.
+ * ==========================================================
+ * KERNEL MENU
+ * ==========================================================
  */
 
-function RadialKernelMenu({
+function KernelMenu({
   open,
   onClose,
 }: {
   open: boolean;
   onClose: () => void;
 }) {
-  const [active, setActive] = useState<number | null>(null);
-
   if (!open) {
     return null;
   }
 
-  const items = KERNEL_ACTIONS;
-
-  const SIZE = 400;
-  const CENTER = SIZE / 2;
-
-  /*
-   * Outer and inner radius define the actual wheel.
-   *
-   * The inner radius leaves a clean centre for Kernel.
-   */
-
-  const OUTER_RADIUS = 184;
-  const INNER_RADIUS = 64;
-
-  const segmentAngle = 360 / items.length;
-
-  const polar = (
-    angle: number,
-    radius: number,
-  ): [number, number] => {
-    const radians =
-      ((angle - 90) * Math.PI) / 180;
-
-    return [
-      CENTER + Math.cos(radians) * radius,
-      CENTER + Math.sin(radians) * radius,
-    ];
-  };
-
-  /*
-   * Creates one clean radial sector.
-   *
-   * There is a very small gap between sectors so the
-   * wheel doesn't become visually heavy.
-   */
-
-  const createSectorPath = (
-    index: number,
-  ) => {
-    const gap = 1.25;
-
-    const startAngle =
-      index * segmentAngle -
-      segmentAngle / 2 +
-      gap;
-
-    const endAngle =
-      index * segmentAngle +
-      segmentAngle / 2 -
-      gap;
-
-    const [
-      outerStartX,
-      outerStartY,
-    ] = polar(
-      startAngle,
-      OUTER_RADIUS,
-    );
-
-    const [
-      outerEndX,
-      outerEndY,
-    ] = polar(
-      endAngle,
-      OUTER_RADIUS,
-    );
-
-    const [
-      innerEndX,
-      innerEndY,
-    ] = polar(
-      endAngle,
-      INNER_RADIUS,
-    );
-
-    const [
-      innerStartX,
-      innerStartY,
-    ] = polar(
-      startAngle,
-      INNER_RADIUS,
-    );
-
-    return [
-      `M ${innerStartX} ${innerStartY}`,
-      `L ${outerStartX} ${outerStartY}`,
-      `A ${OUTER_RADIUS} ${OUTER_RADIUS} 0 0 1 ${outerEndX} ${outerEndY}`,
-      `L ${innerEndX} ${innerEndY}`,
-      `A ${INNER_RADIUS} ${INNER_RADIUS} 0 0 0 ${innerStartX} ${innerStartY}`,
-      "Z",
-    ].join(" ");
-  };
-
-  /*
-   * Position labels around the middle of each sector.
-   */
-
-  const getLabelPosition = (
-    index: number,
-  ): [number, number] => {
-    const angle =
-      index * segmentAngle;
-
-    return polar(
-      angle,
-      (OUTER_RADIUS + INNER_RADIUS) / 2,
-    );
-  };
-
-  /*
-   * Sector separator.
-   *
-   * Only ONE set of radial lines.
-   * No extra rings.
-   */
-
-  const getSeparator = (
-    index: number,
-  ) => {
-    const angle =
-      index * segmentAngle -
-      segmentAngle / 2;
-
-    const [
-      innerX,
-      innerY,
-    ] = polar(
-      angle,
-      INNER_RADIUS + 3,
-    );
-
-    const [
-      outerX,
-      outerY,
-    ] = polar(
-      angle,
-      OUTER_RADIUS,
-    );
-
-    return {
-      innerX,
-      innerY,
-      outerX,
-      outerY,
-    };
-  };
-
-  /*
-   * Navigation.
-   */
-
   const handleAction = (
     item: KernelAction,
   ) => {
+    if (!item.href) {
+      return;
+    }
+
     onClose();
 
     if (item.external) {
@@ -276,7 +116,17 @@ function RadialKernelMenu({
   return (
     <div
       data-kernel
-      className="pointer-events-auto absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
+      className="
+        pointer-events-auto
+        absolute
+        bottom-full
+        left-1/2
+        z-20
+        mb-3
+        w-[190px]
+        -translate-x-1/2
+        animate-[kernel-menu-in_220ms_cubic-bezier(0.16,1,0.3,1)]
+      "
       onPointerDown={(event) => {
         event.stopPropagation();
       }}
@@ -286,290 +136,107 @@ function RadialKernelMenu({
     >
       <div
         className="
-          relative
-          h-[min(88vw,400px)]
-          w-[min(88vw,400px)]
-          animate-[kernel-wheel-in_420ms_cubic-bezier(0.16,1,0.3,1)]
+          overflow-hidden
+          border
+          border-border
+          bg-background
+          shadow-[0_12px_35px_rgba(0,0,0,0.35)]
         "
-        onMouseLeave={() => {
-          setActive(null);
-        }}
       >
-        {/* ------------------------------------------------ */}
-        {/* Transparent blurred wheel surface               */}
-        {/* ------------------------------------------------ */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            rounded-full
-            border
-            border-foreground/20
-            bg-background/20
-            backdrop-blur-md
-          "
-        />
-
-        {/* ------------------------------------------------ */}
-        {/* Radial navigation                               */}
-        {/* ------------------------------------------------ */}
-
-        <svg
-          viewBox={`0 0 ${SIZE} ${SIZE}`}
-          className="absolute inset-0 h-full w-full"
-          role="menu"
-          aria-label="Kernel navigation"
-        >
-          {/* ---------------------------------------------- */}
-          {/* Clickable sectors                              */}
-          {/* ---------------------------------------------- */}
-
-          {items.map((item, index) => {
-            const selected =
-              active === index;
-
-            const [
-              labelX,
-              labelY,
-            ] = getLabelPosition(
-              index,
-            );
+        {KERNEL_ACTIONS.map(
+          (item, index) => {
+            const disabled =
+              !item.href;
 
             return (
-              <g key={item.label}>
-                {/* Sector */}
-                <path
-                  d={createSectorPath(
-                    index,
-                  )}
-                  fill={
-                    selected
-                      ? "color-mix(in oklab, var(--color-accent) 18%, transparent)"
-                      : "transparent"
+              <button
+                key={item.label}
+                type="button"
+                disabled={disabled}
+                onClick={() => {
+                  handleAction(item);
+                }}
+                className={`
+                  group
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+                  border-b
+                  border-border
+                  px-4
+                  py-3
+                  text-left
+                  last:border-b-0
+                  ${
+                    disabled
+                      ? "cursor-default opacity-50"
+                      : "cursor-pointer hover:bg-foreground/[0.035]"
                   }
-                  stroke="none"
-                  className="cursor-pointer transition-[fill] duration-300"
-                  onMouseEnter={() => {
-                    setActive(index);
-                  }}
-                  onFocus={() => {
-                    setActive(index);
-                  }}
-                  onClick={() => {
-                    handleAction(item);
-                  }}
-                  onKeyDown={(
-                    event,
-                  ) => {
-                    if (
-                      event.key ===
-                        "Enter" ||
-                      event.key ===
-                        " "
-                    ) {
-                      event.preventDefault();
-                      handleAction(
-                        item,
-                      );
-                    }
-                  }}
-                  role="menuitem"
-                  tabIndex={0}
-                  aria-label={
-                    item.label
-                  }
-                />
+                `}
+              >
+                <span className="flex items-center gap-3">
+                  <span
+                    className="
+                      font-mono
+                      text-[10px]
+                      font-medium
+                      tracking-[0.12em]
+                      text-accent
+                    "
+                  >
+                    {String(
+                      index + 1,
+                    ).padStart(2, "0")}
+                  </span>
 
-                {/* ---------------------------------------- */}
-                {/* Single radial separator                  */}
-                {/* ---------------------------------------- */}
+                  <span
+                    className="
+                      font-mono
+                      text-[11px]
+                      font-medium
+                      uppercase
+                      tracking-[0.12em]
+                      text-foreground
+                    "
+                  >
+                    {item.label}
+                  </span>
+                </span>
 
-                {(() => {
-                  const separator =
-                    getSeparator(
-                      index,
-                    );
-
-                  return (
-                    <line
-                      x1={
-                        separator.innerX
-                      }
-                      y1={
-                        separator.innerY
-                      }
-                      x2={
-                        separator.outerX
-                      }
-                      y2={
-                        separator.outerY
-                      }
-                      stroke={
-                        selected
-                          ? "color-mix(in oklab, var(--color-accent) 70%, transparent)"
-                          : "var(--color-border)"
-                      }
-                      strokeWidth={
-                        selected
-                          ? "1"
-                          : "0.7"
-                      }
-                      opacity={
-                        selected
-                          ? "0.95"
-                          : "0.75"
-                      }
-                      pointerEvents="none"
-                    />
-                  );
-                })()}
-
-                {/* ---------------------------------------- */}
-                {/* Number                                   */}
-                {/* ---------------------------------------- */}
-
-                <text
-                  x={labelX}
-                  y={
-                    labelY - 8
-                  }
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  pointerEvents="none"
-                  className="select-none font-mono text-[12px] font-medium"
-                  fill="var(--color-accent)"
-                >
-                  {item.index}
-                </text>
-
-                {/* ---------------------------------------- */}
-                {/* Label                                    */}
-                {/* ---------------------------------------- */}
-
-                <text
-                  x={labelX}
-                  y={
-                    labelY + 10
-                  }
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  pointerEvents="none"
-                  className="select-none font-mono text-[8px] font-medium uppercase tracking-[0.12em]"
-                  fill={
-                    selected
-                      ? "var(--color-foreground)"
-                      : "var(--color-muted-foreground)"
-                  }
-                  opacity={
-                    selected
-                      ? 1
-                      : 0.85
-                  }
-                >
-                  {item.label}
-                </text>
-
-                {/* ---------------------------------------- */}
-                {/* Tiny active marker                       */}
-                {/* ---------------------------------------- */}
-
-                {selected && (
-                  <circle
-                    cx={labelX}
-                    cy={
-                      labelY + 22
-                    }
-                    r="1.6"
-                    fill="var(--color-accent)"
-                    pointerEvents="none"
-                  />
+                {!disabled && (
+                  <span
+                    className="
+                      font-mono
+                      text-[11px]
+                      text-muted-foreground
+                      transition-transform
+                      duration-200
+                      group-hover:translate-x-0.5
+                      group-hover:text-accent
+                    "
+                  >
+                    ↗
+                  </span>
                 )}
-              </g>
+
+                {disabled && (
+                  <span
+                    className="
+                      font-mono
+                      text-[9px]
+                      uppercase
+                      tracking-[0.1em]
+                      text-muted-foreground
+                    "
+                  >
+                    Soon
+                  </span>
+                )}
+              </button>
             );
-          })}
-
-          {/* ------------------------------------------------ */}
-          {/* Clean outer boundary                            */}
-          {/* ------------------------------------------------ */}
-
-          <circle
-            cx={CENTER}
-            cy={CENTER}
-            r={OUTER_RADIUS}
-            fill="none"
-            stroke="var(--color-foreground)"
-            strokeWidth="0.8"
-            opacity="0.2"
-          />
-
-          {/* ------------------------------------------------ */}
-          {/* Clean centre boundary                           */}
-          {/* ------------------------------------------------ */}
-
-          <circle
-            cx={CENTER}
-            cy={CENTER}
-            r={INNER_RADIUS}
-            fill="var(--color-background)"
-            fillOpacity="0.55"
-            stroke="var(--color-foreground)"
-            strokeWidth="0.8"
-            strokeOpacity="0.25"
-          />
-
-          {/* ------------------------------------------------ */}
-          {/* Small centre accent ring                       */}
-          {/* ------------------------------------------------ */}
-
-          <circle
-            cx={CENTER}
-            cy={CENTER}
-            r={INNER_RADIUS - 7}
-            fill="none"
-            stroke="var(--color-accent)"
-            strokeWidth="0.6"
-            strokeOpacity="0.45"
-          />
-        </svg>
-
-        {/* ------------------------------------------------ */}
-        {/* Kernel remains clearly visible in centre         */}
-        {/* ------------------------------------------------ */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-1/2
-            flex
-            h-[86px]
-            w-[86px]
-            -translate-x-1/2
-            -translate-y-1/2
-            items-center
-            justify-center
-          "
-        >
-          <span
-            className="
-              absolute
-              bottom-[8px]
-              left-1/2
-              -translate-x-1/2
-              font-mono
-              text-[7px]
-              font-medium
-              uppercase
-              tracking-[0.18em]
-              text-accent/70
-            "
-          >
-            Kernel
-          </span>
-        </div>
+          },
+        )}
       </div>
     </div>
   );
@@ -594,50 +261,79 @@ export function Kernel() {
 
   /*
    * ----------------------------------------------------------
-   * POSITION
+   * HOME POSITION
    * ----------------------------------------------------------
    */
 
-  const positionRef =
-    useRef<Point>({
-      x:
-        typeof window !==
+  const getHomePosition =
+    (): Point => {
+      if (
+        typeof window ===
         "undefined"
-          ? window.innerWidth -
-            90
-          : 0,
+      ) {
+        return {
+          x: 32,
+          y: 32,
+        };
+      }
 
-      y:
-        typeof window !==
-        "undefined"
-          ? window.innerHeight -
-            90
-          : 0,
-    });
+      const homeLink =
+        document.querySelector<HTMLAnchorElement>(
+          'a[href="#top"]',
+        );
+
+      if (homeLink) {
+        const rect =
+          homeLink.getBoundingClientRect();
+
+        return {
+          x:
+            rect.right + 27,
+          y:
+            rect.top +
+            rect.height / 2,
+        };
+      }
+
+      /*
+       * Safe fallback if the navbar link
+       * cannot be found.
+       */
+
+      return {
+        x: 90,
+        y: 32,
+      };
+    };
+
+  const initialHome =
+    typeof window !==
+    "undefined"
+      ? getHomePosition()
+      : {
+          x: 32,
+          y: 32,
+        };
+
+  const positionRef =
+    useRef<Point>(
+      initialHome,
+    );
 
   const destinationRef =
-    useRef<Point>({
-      x:
-        typeof window !==
-        "undefined"
-          ? window.innerWidth -
-            90
-          : 0,
+    useRef<Point>(
+      initialHome,
+    );
 
-      y:
-        typeof window !==
-        "undefined"
-          ? window.innerHeight -
-            90
-          : 0,
-    });
+  const homePositionRef =
+    useRef<Point>(
+      initialHome,
+    );
 
   /*
    * ----------------------------------------------------------
    * CURSOR
    * ----------------------------------------------------------
-   *
-   * Cursor only controls eyes.
    */
 
   const cursorRef =
@@ -660,6 +356,43 @@ export function Kernel() {
 
   /*
    * ----------------------------------------------------------
+   * RETURNING HOME
+   * ----------------------------------------------------------
+   *
+   * This is the important state that makes the
+   * 10-second return behavior reliable.
+   */
+
+  const returningHomeRef =
+    useRef(false);
+
+  /*
+   * ----------------------------------------------------------
+   * SLEEPING
+   * ----------------------------------------------------------
+   */
+
+  const [sleeping, setSleeping] =
+    useState(true);
+
+  const sleepingRef =
+    useRef(true);
+
+  /*
+   * ----------------------------------------------------------
+   * RETURN TIMER
+   * ----------------------------------------------------------
+   *
+   * Browser timers use number.
+   */
+
+  const homeTimerRef =
+    useRef<number | null>(
+      null,
+    );
+
+  /*
+   * ----------------------------------------------------------
    * BOT STATE
    * ----------------------------------------------------------
    */
@@ -670,10 +403,19 @@ export function Kernel() {
   const botStateRef =
     useRef<BotState>("idle");
 
+  /*
+   * Keep the ref synchronized with React state.
+   */
+
+  useEffect(() => {
+    botStateRef.current =
+      botState;
+  }, [botState]);
+
   const blinkTimerRef =
-    useRef<
-      ReturnType<typeof setTimeout> | null
-    >(null);
+    useRef<number | null>(
+      null,
+    );
 
   /*
    * ----------------------------------------------------------
@@ -699,13 +441,145 @@ export function Kernel() {
     );
 
   /*
-   * Synchronize bot state.
+   * ----------------------------------------------------------
+   * STATE HELPERS
+   * ----------------------------------------------------------
    */
 
-  useEffect(() => {
-    botStateRef.current =
-      botState;
-  }, [botState]);
+  const updateSleeping = (
+    value: boolean,
+  ) => {
+    sleepingRef.current =
+      value;
+
+    setSleeping(value);
+  };
+
+  /*
+   * ----------------------------------------------------------
+   * CLEAR RETURN TIMER
+   * ----------------------------------------------------------
+   */
+
+  const clearHomeTimer =
+    () => {
+      if (
+        homeTimerRef.current !==
+        null
+      ) {
+        window.clearTimeout(
+          homeTimerRef.current,
+        );
+
+        homeTimerRef.current =
+          null;
+      }
+    };
+
+  /*
+   * ----------------------------------------------------------
+   * START RETURN HOME
+   * ----------------------------------------------------------
+   *
+   * This is called by the 10-second timer.
+   */
+
+  const startReturnHome =
+    () => {
+      /*
+       * Get the latest navbar position.
+       */
+
+      const home =
+        getHomePosition();
+
+      homePositionRef.current =
+        home;
+
+      /*
+       * Make home the destination.
+       */
+
+      destinationRef.current =
+        {
+          x: home.x,
+          y: home.y,
+        };
+
+      /*
+       * Explicitly mark Kernel as returning.
+       */
+
+      returningHomeRef.current =
+        true;
+
+      /*
+       * Reset walking animation.
+       */
+
+      walkDistanceRef.current =
+        0;
+
+      /*
+       * Wake Kernel while it walks home.
+       */
+
+      updateSleeping(false);
+
+      /*
+       * Close menu.
+       */
+
+      setMenuOpen(false);
+
+      /*
+       * IMPORTANT:
+       * Start walking even if the previous state
+       * somehow says otherwise.
+       */
+
+      walkingRef.current =
+        true;
+    };
+
+  /*
+   * ----------------------------------------------------------
+   * SCHEDULE RETURN HOME
+   * ----------------------------------------------------------
+   *
+   * Called ONLY after Kernel reaches a clicked location.
+   */
+
+  const scheduleReturnHome =
+    () => {
+      clearHomeTimer();
+
+      /*
+       * Kernel is waiting at the clicked location.
+       */
+
+      returningHomeRef.current =
+        false;
+
+      homeTimerRef.current =
+        window.setTimeout(
+          () => {
+            /*
+             * Timer has fired.
+             */
+
+            homeTimerRef.current =
+              null;
+
+            /*
+             * Now begin the return journey.
+             */
+
+            startReturnHome();
+          },
+          10000,
+        );
+    };
 
   /*
    * ----------------------------------------------------------
@@ -714,14 +588,13 @@ export function Kernel() {
    */
 
   useEffect(() => {
-    const handlePointerMove = (
-      event: PointerEvent,
-    ) => {
-      cursorRef.current = {
-        x: event.clientX,
-        y: event.clientY,
+    const handlePointerMove =
+      (event: PointerEvent) => {
+        cursorRef.current = {
+          x: event.clientX,
+          y: event.clientY,
+        };
       };
-    };
 
     window.addEventListener(
       "pointermove",
@@ -743,74 +616,94 @@ export function Kernel() {
    * ----------------------------------------------------------
    * PAGE CLICK → WALK
    * ----------------------------------------------------------
-   *
-   * Clicking outside Kernel:
-   *
-   * 1. Closes radial wheel.
-   * 2. Sets Kernel destination.
-   * 3. Makes Kernel walk there.
-   *
-   * Clicking inside [data-kernel] is ignored.
    */
 
   useEffect(() => {
-    const handlePagePointerDown = (
-      event: PointerEvent,
-    ) => {
-      const target =
-        event.target;
+    const handlePagePointerDown =
+      (event: PointerEvent) => {
+        const target =
+          event.target;
 
-      if (
-        target instanceof Element &&
-        target.closest(
-          "[data-kernel]",
-        )
-      ) {
-        return;
-      }
+        /*
+         * Ignore clicks on Kernel itself.
+         */
 
-      /*
-       * Close radial wheel when
-       * clicking anywhere outside it.
-       */
+        if (
+          target instanceof
+            Element &&
+          target.closest(
+            "[data-kernel]",
+          )
+        ) {
+          return;
+        }
 
-      setMenuOpen(false);
+        /*
+         * New page click completely resets
+         * the previous return cycle.
+         */
 
-      const padding = 35;
+        clearHomeTimer();
 
-      const destinationX =
-        Math.max(
-          padding,
-          Math.min(
-            window.innerWidth -
-              padding,
-            event.clientX,
-          ),
-        );
+        returningHomeRef.current =
+          false;
 
-      const destinationY =
-        Math.max(
-          padding,
-          Math.min(
-            window.innerHeight -
-              padding,
-            event.clientY,
-          ),
-        );
+        setMenuOpen(false);
 
-      destinationRef.current = {
-        x: destinationX,
-        y: destinationY,
+        const padding = 35;
+
+        const destinationX =
+          Math.max(
+            padding,
+            Math.min(
+              window.innerWidth -
+                padding,
+              event.clientX,
+            ),
+          );
+
+        const destinationY =
+          Math.max(
+            padding,
+            Math.min(
+              window.innerHeight -
+                padding,
+              event.clientY,
+            ),
+          );
+
+        /*
+         * Set clicked location.
+         */
+
+        destinationRef.current =
+          {
+            x: destinationX,
+            y: destinationY,
+          };
+
+        walkDistanceRef.current =
+          0;
+
+        /*
+         * Start walking.
+         */
+
+        walkingRef.current =
+          true;
+
+        /*
+         * Wake Kernel.
+         */
+
+        updateSleeping(false);
+
+        /*
+         * Small reaction.
+         */
+
+        triggerReaction();
       };
-
-      walkDistanceRef.current =
-        0;
-
-      walkingRef.current =
-        true;
-
-      triggerReaction();
-    };
 
     window.addEventListener(
       "pointerdown",
@@ -832,15 +725,46 @@ export function Kernel() {
    */
 
   useEffect(() => {
-    const handleKeyDown = (
-      event: KeyboardEvent,
-    ) => {
-      if (
-        event.key === "Escape"
-      ) {
+    const handleKeyDown =
+      (event: KeyboardEvent) => {
+        if (
+          event.key !==
+          "Escape"
+        ) {
+          return;
+        }
+
         setMenuOpen(false);
-      }
-    };
+
+        if (
+          !walkingRef.current
+        ) {
+          const home =
+            homePositionRef.current;
+
+          const position =
+            positionRef.current;
+
+          const distance =
+            Math.hypot(
+              position.x -
+                home.x,
+              position.y -
+                home.y,
+            );
+
+          if (
+            distance < 4
+          ) {
+            clearHomeTimer();
+
+            returningHomeRef.current =
+              false;
+
+            updateSleeping(true);
+          }
+        }
+      };
 
     window.addEventListener(
       "keydown",
@@ -864,41 +788,61 @@ export function Kernel() {
   useEffect(() => {
     let cancelled = false;
 
-    const scheduleBlink = (
-      delay: number,
-    ) => {
-      blinkTimerRef.current =
-        setTimeout(() => {
-          if (cancelled) {
-            return;
-          }
+    let blinkEndTimer:
+      number | null = null;
 
-          if (
-            walkingRef.current
-          ) {
-            scheduleBlink(1200);
-            return;
-          }
+    const scheduleBlink =
+      (delay: number) => {
+        blinkTimerRef.current =
+          window.setTimeout(
+            () => {
+              if (cancelled) {
+                return;
+              }
 
-          setBotState("blink");
+              if (
+                walkingRef.current ||
+                sleepingRef.current
+              ) {
+                scheduleBlink(
+                  1200,
+                );
 
-          setTimeout(() => {
-            if (cancelled) {
-              return;
-            }
+                return;
+              }
 
-            setBotState("idle");
+              setBotState(
+                "blink",
+              );
 
-            const nextDelay =
-              1800 +
-              Math.random() * 3200;
+              blinkEndTimer =
+                window.setTimeout(
+                  () => {
+                    if (
+                      cancelled
+                    ) {
+                      return;
+                    }
 
-            scheduleBlink(
-              nextDelay,
-            );
-          }, 110);
-        }, delay);
-    };
+                    setBotState(
+                      "idle",
+                    );
+
+                    const nextDelay =
+                      1800 +
+                      Math.random() *
+                        3200;
+
+                    scheduleBlink(
+                      nextDelay,
+                    );
+                  },
+                  110,
+                );
+            },
+            delay,
+          );
+      };
 
     scheduleBlink(
       2200 +
@@ -909,10 +853,20 @@ export function Kernel() {
       cancelled = true;
 
       if (
-        blinkTimerRef.current
+        blinkTimerRef.current !==
+        null
       ) {
-        clearTimeout(
+        window.clearTimeout(
           blinkTimerRef.current,
+        );
+      }
+
+      if (
+        blinkEndTimer !==
+        null
+      ) {
+        window.clearTimeout(
+          blinkEndTimer,
         );
       }
     };
@@ -945,36 +899,31 @@ export function Kernel() {
         position.y;
 
       const distance =
-        Math.hypot(dx, dy);
-
-      if (
-        walkingRef.current &&
-        distance > 1.5
-      ) {
-        const directionX =
-          dx / distance;
-
-        const directionY =
-          dy / distance;
-
-        const step = Math.min(
-          WALK_SPEED,
-          distance,
+        Math.hypot(
+          dx,
+          dy,
         );
 
-        position.x +=
-          directionX * step;
+      /*
+       * ------------------------------------------------------
+       * WALKING
+       * ------------------------------------------------------
+       */
 
-        position.y +=
-          directionY * step;
-
-        walkDistanceRef.current +=
-          step;
+      if (
+        walkingRef.current
+      ) {
+        /*
+         * Arrived at destination.
+         */
 
         if (
-          distance <=
-          WALK_SPEED + 0.5
+          distance <= 1.5
         ) {
+          /*
+           * Snap exactly to destination.
+           */
+
           position.x =
             destination.x;
 
@@ -986,35 +935,122 @@ export function Kernel() {
 
           walkDistanceRef.current =
             0;
+
+          /*
+           * --------------------------------------------------
+           * RETURNED HOME
+           * --------------------------------------------------
+           */
+
+          if (
+            returningHomeRef.current
+          ) {
+            /*
+             * Make absolutely sure Kernel is exactly
+             * at the latest navbar position.
+             */
+
+            const home =
+              homePositionRef.current;
+
+            position.x =
+              home.x;
+
+            position.y =
+              home.y;
+
+            destinationRef.current =
+              {
+                x: home.x,
+                y: home.y,
+              };
+
+            returningHomeRef.current =
+              false;
+
+            clearHomeTimer();
+
+            /*
+             * Back home → sleep.
+             */
+
+            updateSleeping(true);
+          } else {
+            /*
+             * ------------------------------------------------
+             * ARRIVED AT CLICKED LOCATION
+             * ------------------------------------------------
+             *
+             * Start the 10-second countdown HERE.
+             */
+
+            updateSleeping(false);
+
+            scheduleReturnHome();
+          }
+        } else {
+          /*
+           * --------------------------------------------------
+           * CONTINUE WALKING
+           * --------------------------------------------------
+           */
+
+          const directionX =
+            dx / distance;
+
+          const directionY =
+            dy / distance;
+
+          const step =
+            Math.min(
+              WALK_SPEED,
+              distance,
+            );
+
+          position.x +=
+            directionX * step;
+
+          position.y +=
+            directionY * step;
+
+          walkDistanceRef.current +=
+            step;
         }
-      } else {
-        walkingRef.current =
-          false;
       }
 
       /*
-       * Keep Kernel inside viewport.
+       * ------------------------------------------------------
+       * KEEP KERNEL INSIDE VIEWPORT
+       * ------------------------------------------------------
        */
 
       const padding = 24;
 
-      position.x = Math.max(
-        padding,
-        Math.min(
-          window.innerWidth -
-            padding,
-          position.x,
-        ),
-      );
+      position.x =
+        Math.max(
+          padding,
+          Math.min(
+            window.innerWidth -
+              padding,
+            position.x,
+          ),
+        );
 
-      position.y = Math.max(
-        padding,
-        Math.min(
-          window.innerHeight -
-            padding,
-          position.y,
-        ),
-      );
+      position.y =
+        Math.max(
+          padding,
+          Math.min(
+            window.innerHeight -
+              padding,
+            position.y,
+          ),
+        );
+
+      /*
+       * ------------------------------------------------------
+       * APPLY POSITION
+       * ------------------------------------------------------
+       */
 
       if (
         containerRef.current
@@ -1023,21 +1059,95 @@ export function Kernel() {
           `translate3d(${position.x}px, ${position.y}px, 0)`;
       }
 
+      /*
+       * ------------------------------------------------------
+       * DRAW
+       * ------------------------------------------------------
+       */
+
       drawPixelCompanion();
 
       frame =
-        requestAnimationFrame(
+        window.requestAnimationFrame(
           animate,
         );
     };
 
     frame =
-      requestAnimationFrame(
+      window.requestAnimationFrame(
         animate,
       );
 
     return () => {
-      cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(
+        frame,
+      );
+    };
+  }, []);
+
+  /*
+   * ----------------------------------------------------------
+   * RESIZE
+   * ----------------------------------------------------------
+   */
+
+  useEffect(() => {
+    const handleResize =
+      () => {
+        const home =
+          getHomePosition();
+
+        homePositionRef.current =
+          home;
+
+        /*
+         * If Kernel is at home, keep it attached
+         * to the navbar.
+         */
+
+        if (
+          !walkingRef.current &&
+          !returningHomeRef.current
+        ) {
+          const position =
+            positionRef.current;
+
+          const distance =
+            Math.hypot(
+              position.x -
+                home.x,
+              position.y -
+                home.y,
+            );
+
+          if (
+            distance < 4
+          ) {
+            positionRef.current =
+              {
+                x: home.x,
+                y: home.y,
+              };
+
+            destinationRef.current =
+              {
+                x: home.x,
+                y: home.y,
+              };
+          }
+        }
+      };
+
+    window.addEventListener(
+      "resize",
+      handleResize,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        handleResize,
+      );
     };
   }, []);
 
@@ -1072,22 +1182,68 @@ export function Kernel() {
       GRID,
     );
 
-    ctx.fillStyle = WHITE;
-
     /*
+     * --------------------------------------------------------
      * BODY / HEAD
+     * --------------------------------------------------------
      */
 
-    ctx.fillRect(6, 1, 4, 1);
-    ctx.fillRect(5, 2, 6, 1);
-    ctx.fillRect(4, 3, 8, 1);
-    ctx.fillRect(3, 4, 10, 1);
-    ctx.fillRect(3, 5, 10, 5);
-    ctx.fillRect(4, 10, 8, 1);
-    ctx.fillRect(5, 11, 6, 1);
+    ctx.fillStyle =
+      WHITE;
+
+    ctx.fillRect(
+      6,
+      1,
+      4,
+      1,
+    );
+
+    ctx.fillRect(
+      5,
+      2,
+      6,
+      1,
+    );
+
+    ctx.fillRect(
+      4,
+      3,
+      8,
+      1,
+    );
+
+    ctx.fillRect(
+      3,
+      4,
+      10,
+      1,
+    );
+
+    ctx.fillRect(
+      3,
+      5,
+      10,
+      5,
+    );
+
+    ctx.fillRect(
+      4,
+      10,
+      8,
+      1,
+    );
+
+    ctx.fillRect(
+      5,
+      11,
+      6,
+      1,
+    );
 
     /*
+     * --------------------------------------------------------
      * WALK FRAME
+     * --------------------------------------------------------
      */
 
     const walkFrame =
@@ -1097,7 +1253,9 @@ export function Kernel() {
       ) % 2;
 
     /*
+     * --------------------------------------------------------
      * ARMS
+     * --------------------------------------------------------
      */
 
     if (
@@ -1149,62 +1307,96 @@ export function Kernel() {
     }
 
     /*
+     * --------------------------------------------------------
      * EYES
-     */
-
-    const rect =
-      canvas.getBoundingClientRect();
-
-    const centerX =
-      rect.left +
-      rect.width / 2;
-
-    const centerY =
-      rect.top +
-      rect.height / 2;
-
-    const cursor =
-      cursorRef.current;
-
-    const dx =
-      cursor.x - centerX;
-
-    const dy =
-      cursor.y - centerY;
-
-    const distance =
-      Math.hypot(dx, dy);
-
-    const eyeDistance =
-      Math.min(
-        1,
-        distance / 70,
-      );
-
-    const angle =
-      Math.atan2(dy, dx);
-
-    const eyeX =
-      Math.round(
-        Math.cos(angle) *
-          eyeDistance,
-      );
-
-    const eyeY =
-      Math.round(
-        Math.sin(angle) *
-          eyeDistance,
-      );
-
-    /*
-     * BLINK
+     * --------------------------------------------------------
      */
 
     if (
+      sleepingRef.current
+    ) {
+      /*
+       * Tiny sleeping eyes.
+       */
+
+      ctx.fillStyle =
+        DARK;
+
+      ctx.fillRect(
+        6,
+        7,
+        1,
+        1,
+      );
+
+      ctx.fillRect(
+        9,
+        7,
+        1,
+        1,
+      );
+    } else if (
       botStateRef.current !==
       "blink"
     ) {
-      ctx.fillStyle = DARK;
+      /*
+       * Awake eyes follow mouse.
+       */
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+      const centerX =
+        rect.left +
+        rect.width / 2;
+
+      const centerY =
+        rect.top +
+        rect.height / 2;
+
+      const cursor =
+        cursorRef.current;
+
+      const dx =
+        cursor.x -
+        centerX;
+
+      const dy =
+        cursor.y -
+        centerY;
+
+      const distance =
+        Math.hypot(
+          dx,
+          dy,
+        );
+
+      const eyeDistance =
+        Math.min(
+          1,
+          distance / 70,
+        );
+
+      const angle =
+        Math.atan2(
+          dy,
+          dx,
+        );
+
+      const eyeX =
+        Math.round(
+          Math.cos(angle) *
+            eyeDistance,
+        );
+
+      const eyeY =
+        Math.round(
+          Math.sin(angle) *
+            eyeDistance,
+        );
+
+      ctx.fillStyle =
+        DARK;
 
       ctx.fillRect(
         6 + eyeX,
@@ -1222,99 +1414,35 @@ export function Kernel() {
     }
 
     /*
+     * --------------------------------------------------------
      * LEGS
+     * --------------------------------------------------------
      */
 
-    ctx.fillStyle = WHITE;
+    ctx.fillStyle =
+      WHITE;
 
-    if (
-      !walkingRef.current
-    ) {
-      ctx.fillRect(
-        4,
-        12,
-        2,
-        3,
-      );
+    if (!walkingRef.current) {
+      // standing
+      ctx.fillRect(5, 12, 2, 3);
+      ctx.fillRect(4, 14, 3, 1);
 
-      ctx.fillRect(
-        3,
-        14,
-        3,
-        1,
-      );
+      ctx.fillRect(9, 12, 2, 3);
+      ctx.fillRect(9, 14, 3, 1);
+    } else if (walkFrame === 0) {
+      // walking frame 0
+      ctx.fillRect(4, 12, 2, 3);
+      ctx.fillRect(3, 14, 3, 1);
 
-      ctx.fillRect(
-        10,
-        12,
-        2,
-        3,
-      );
-
-      ctx.fillRect(
-        10,
-        14,
-        3,
-        1,
-      );
-    } else if (
-      walkFrame === 0
-    ) {
-      ctx.fillRect(
-        3,
-        12,
-        2,
-        3,
-      );
-
-      ctx.fillRect(
-        2,
-        14,
-        3,
-        1,
-      );
-
-      ctx.fillRect(
-        10,
-        12,
-        2,
-        2,
-      );
-
-      ctx.fillRect(
-        10,
-        14,
-        3,
-        1,
-      );
+      ctx.fillRect(9, 12, 2, 2);
+      ctx.fillRect(9, 14, 3, 1);
     } else {
-      ctx.fillRect(
-        5,
-        12,
-        2,
-        2,
-      );
+      // walking frame 1
+      ctx.fillRect(6, 12, 2, 2);
+      ctx.fillRect(5, 14, 3, 1);
 
-      ctx.fillRect(
-        4,
-        14,
-        3,
-        1,
-      );
-
-      ctx.fillRect(
-        11,
-        12,
-        2,
-        3,
-      );
-
-      ctx.fillRect(
-        11,
-        14,
-        3,
-        1,
-      );
+      ctx.fillRect(10, 12, 2, 3);
+      ctx.fillRect(10, 14, 3, 1);
     }
   }
 
@@ -1337,14 +1465,17 @@ export function Kernel() {
     }
 
     reactionTimerRef.current =
-      window.setTimeout(() => {
-        setReaction(false);
-      }, 220);
+      window.setTimeout(
+        () => {
+          setReaction(false);
+        },
+        220,
+      );
   }
 
   /*
    * ----------------------------------------------------------
-   * REACTION CLEANUP
+   * CLEANUP
    * ----------------------------------------------------------
    */
 
@@ -1358,8 +1489,72 @@ export function Kernel() {
           reactionTimerRef.current,
         );
       }
+
+      if (
+        homeTimerRef.current !==
+        null
+      ) {
+        window.clearTimeout(
+          homeTimerRef.current,
+        );
+      }
     };
   }, []);
+
+  /*
+   * ----------------------------------------------------------
+   * KERNEL CLICK
+   * ----------------------------------------------------------
+   */
+
+  const handleKernelClick =
+    (
+      event: React.MouseEvent,
+    ) => {
+      event.stopPropagation();
+
+      triggerReaction();
+
+      /*
+       * Wake Kernel.
+       */
+
+      updateSleeping(false);
+
+      setMenuOpen(
+        (current) => !current,
+      );
+
+      /*
+       * If Kernel is standing somewhere away from
+       * the navbar, clicking it resets the 10-second
+       * countdown.
+       */
+
+      if (
+        !walkingRef.current
+      ) {
+        const home =
+          homePositionRef.current;
+
+        const position =
+          positionRef.current;
+
+        const distance =
+          Math.hypot(
+            position.x -
+              home.x,
+            position.y -
+              home.y,
+          );
+
+        if (
+          distance >= 4
+        ) {
+          scheduleReturnHome();
+        }
+      }
+    };
 
   /*
    * ----------------------------------------------------------
@@ -1371,23 +1566,147 @@ export function Kernel() {
     <div
       ref={containerRef}
       data-kernel
-      className="pointer-events-none fixed left-0 top-0 z-50"
+      className="
+        pointer-events-none
+        fixed
+        left-0
+        top-0
+        z-50
+      "
       style={{
         transform:
           "translate3d(-90px, -90px, 0)",
       }}
     >
-      <div className="relative -translate-x-1/2 -translate-y-1/2">
-        {/* Radial navigation wheel */}
+      <div
+        className="
+          relative
+          -translate-x-1/2
+          -translate-y-1/2
+        "
+      >
+        {/*
+         * ----------------------------------------------------
+         * SLEEPING ZZZ
+         * ----------------------------------------------------
+         */}
 
-        <RadialKernelMenu
+        {sleeping && (
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -right-1
+              -top-3
+              h-7
+              w-7
+              select-none
+              font-mono
+              font-semibold
+              leading-none
+              text-foreground
+            "
+            aria-hidden="true"
+          >
+            <span
+              className="
+                absolute
+                right-[2px]
+                top-[13px]
+                text-[8px]
+                opacity-80
+                animate-[kernel-sleep-1_2.8s_ease-in-out_infinite]
+              "
+            >
+              z
+            </span>
+
+            <span
+              className="
+                absolute
+                right-[6px]
+                top-[7px]
+                text-[10px]
+                opacity-75
+                animate-[kernel-sleep-2_2.8s_ease-in-out_infinite]
+              "
+            >
+              z
+            </span>
+
+            <span
+              className="
+                absolute
+                right-[9px]
+                top-0
+                text-[12px]
+                opacity-70
+                animate-[kernel-sleep-3_2.8s_ease-in-out_infinite]
+              "
+            >
+              z
+            </span>
+          </div>
+        )}
+
+        {/*
+         * ----------------------------------------------------
+         * KERNEL MENU
+         * ----------------------------------------------------
+         */}
+
+        <KernelMenu
           open={menuOpen}
           onClose={() => {
             setMenuOpen(false);
+
+            if (
+              !walkingRef.current
+            ) {
+              const home =
+                homePositionRef.current;
+
+              const position =
+                positionRef.current;
+
+              const distance =
+                Math.hypot(
+                  position.x -
+                    home.x,
+                  position.y -
+                    home.y,
+                );
+
+              if (
+                distance >= 4
+              ) {
+                /*
+                 * Menu interaction while away
+                 * resets the countdown.
+                 */
+
+                scheduleReturnHome();
+              } else {
+                /*
+                 * At navbar → sleep.
+                 */
+
+                clearHomeTimer();
+
+                returningHomeRef.current =
+                  false;
+
+                updateSleeping(true);
+              }
+            }
           }}
         />
 
-        {/* Kernel */}
+        {/*
+         * ----------------------------------------------------
+         * KERNEL BUTTON
+         * ----------------------------------------------------
+         */}
 
         <button
           type="button"
@@ -1397,15 +1716,9 @@ export function Kernel() {
           onPointerDown={(event) => {
             event.stopPropagation();
           }}
-          onClick={(event) => {
-            event.stopPropagation();
-
-            triggerReaction();
-
-            setMenuOpen(
-              (current) => !current,
-            );
-          }}
+          onClick={
+            handleKernelClick
+          }
           className="
             pointer-events-auto
             relative
@@ -1433,7 +1746,6 @@ export function Kernel() {
               height: `${DISPLAY_SIZE}px`,
               imageRendering:
                 "pixelated",
-
               animation: reaction
                 ? "kernel-hop 220ms steps(3, end)"
                 : "none",

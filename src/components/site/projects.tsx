@@ -16,63 +16,95 @@ const PROJECTS: Project[] = [
     index: "01",
     title: "AI TICKET WORKFLOW ENGINE",
     blurb:
-      "A retrieval-grounded pipeline that reads a support ticket, understands it, and drafts a reply a human can trust.",
-    technologies: ["Python", "FastAPI", "React", "RAG", "Postgres"],
-    github: "https://github.com/kuldeep681/ai-ticket-workflow-engine",
+      "A full-stack enterprise AI support platform combining machine learning, RAG, contextual memory, and deterministic workflow orchestration.",
+    technologies: [
+      "Python",
+      "FastAPI",
+      "React",
+      "Machine Learning",
+      "RAG",
+      "ChromaDB",
+      "SQLite",
+    ],
+    github:
+      "https://github.com/kuldeep681/ai-ticket-workflow-engine.git",
   },
   {
     id: "churn",
     index: "02",
     title: "CUSTOMER CHURN ML SYSTEM",
     blurb:
-      "A churn prediction system built around explainability, production APIs and per-prediction reasoning.",
-    technologies: ["Python", "XGBoost", "SHAP", "FastAPI", "PostgreSQL"],
-    github: "https://github.com/kuldeep681/customer-churn-ml-system",
+      "An end-to-end machine learning engineering system that takes customer data from preprocessing and XGBoost prediction to SHAP explanations, APIs, testing, Docker, CI, and AWS deployment.",
+    technologies: [
+      "Python",
+      "XGBoost",
+      "SHAP",
+      "FastAPI",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+    ],
+    github:
+      "https://github.com/kuldeep681/customer-churn-ml-system.git",
   },
   {
     id: "shelf",
     index: "03",
     title: "SHELF SCANNER",
     blurb:
-      "An AI bookshelf scanner that turns a shelf image into structured book information and useful recommendations.",
-    technologies: ["Python", "OCR", "FastAPI", "Streamlit", "MongoDB"],
-    github: "https://github.com/kuldeep681/Shelf-Scanner",
+      "An OCR-powered bookshelf application that extracts book titles from images, enriches them with metadata, stores bookmarks, and generates lightweight content-based recommendations.",
+    technologies: [
+      "Python",
+      "OCR",
+      "FastAPI",
+      "Streamlit",
+      "Google Books API",
+      "MongoDB",
+    ],
+    github: "https://github.com/kuldeep681/Shelf-Scanner.git",
   },
   {
     id: "rag",
     index: "04",
     title: "RAG PROJECT",
     blurb:
-      "A document-grounded question answering system that retrieves relevant context before generating an answer.",
-    technologies: ["Python", "Embeddings", "Vector Search", "LLM"],
-    github: "https://github.com/kuldeep681/Rag_Project1",
+      "A document-grounded AI assistant that converts documents into embeddings, retrieves relevant context, and uses an LLM to generate answers grounded in the available knowledge.",
+    technologies: [
+      "Python",
+      "RAG",
+      "Embeddings",
+      "Vector Search",
+      "LLM",
+      "Prompt Engineering",
+    ],
+    github: "https://github.com/kuldeep681/Rag_Project1.git",
   },
 ];
 
 const TICKET_STAGES = [
   {
     label: "Input",
-    note: "A raw support ticket enters the system.",
+    note: "A support ticket enters the system and becomes the starting point for the automated workflow.",
   },
   {
     label: "Classification",
-    note: "Intent and category are inferred from the ticket.",
+    note: "Machine learning classifies the ticket so the system can understand its support category.",
   },
   {
     label: "Priority",
-    note: "Urgency is scored from language and context signals.",
+    note: "The system predicts ticket priority and uses the result as part of the workflow decision process.",
   },
   {
     label: "Routing",
-    note: "The ticket is directed to the appropriate processing path.",
+    note: "The predicted department determines the appropriate processing path for the ticket.",
   },
   {
     label: "Retrieval",
-    note: "Relevant knowledge and previous resolutions are retrieved.",
+    note: "Workflow-safe RAG retrieves relevant enterprise knowledge and contextual information from the vector store.",
   },
   {
     label: "Response",
-    note: "A grounded draft is prepared for human review.",
+    note: "The system generates a context-aware response while keeping the workflow state synchronized.",
   },
 ];
 
@@ -156,7 +188,8 @@ function TicketInteraction() {
           </p>
 
           <p className="mt-3 max-w-md text-[17px] leading-7 text-foreground/65">
-            Select another stage to follow the ticket through the system.
+            Follow the ticket from machine-learning classification through
+            retrieval and deterministic workflow execution.
           </p>
         </div>
 
@@ -165,6 +198,7 @@ function TicketInteraction() {
           <span>Priority</span>
           <span>Routing</span>
           <span>RAG</span>
+          <span>Workflow</span>
         </div>
       </div>
     </div>
@@ -184,7 +218,7 @@ const INITIAL_CHURN_FEATURES: ChurnFeature[] = [
     value: 68,
     weight: -0.42,
     description:
-      "Longer tenure generally pushes this illustrative prediction toward retention.",
+      "Longer customer tenure lowers the illustrative churn pressure.",
   },
   {
     name: "Monthly charges",
@@ -198,14 +232,14 @@ const INITIAL_CHURN_FEATURES: ChurnFeature[] = [
     value: 35,
     weight: -0.27,
     description:
-      "A more stable contract reduces the illustrative churn pressure.",
+      "Greater contract stability lowers the illustrative churn pressure.",
   },
   {
     name: "Support contacts",
     value: 64,
     weight: 0.22,
     description:
-      "Frequent support contact increases the illustrative churn pressure.",
+      "This interactive signal increases the illustrative churn pressure.",
   },
 ];
 
@@ -327,6 +361,12 @@ function ChurnInteraction() {
 
           <p className="mt-3 max-w-md text-[17px] leading-7 text-foreground/65">
             {selectedFeature.description}
+          </p>
+
+          <p className="mt-3 max-w-md text-[13px] leading-6 text-foreground/45">
+            Interactive visualization only — the repository’s actual model
+            uses an XGBoost classifier with a recall-focused decision
+            threshold.
           </p>
         </div>
 
@@ -452,9 +492,7 @@ function ShelfInteraction() {
                 >
                   <span
                     className={`flex h-full items-center justify-center text-center font-mono text-[8px] font-medium uppercase leading-tight tracking-[0.04em] ${
-                      selected
-                        ? "text-accent"
-                        : "text-foreground/55"
+                      selected ? "text-accent" : "text-foreground/55"
                     }`}
                     style={{
                       writingMode: "vertical-rl",
@@ -497,8 +535,8 @@ function ShelfInteraction() {
 
           <p className="mt-3 max-w-md text-[17px] leading-7 text-foreground/65">
             {scanned
-              ? "The scanner identifies visible titles and can enrich them with metadata before producing recommendations."
-              : "Click a book to inspect it, or scan the shelf to simulate the recognition step."}
+              ? "The real application uses OCR to extract visible titles, Google Books API to enrich them with metadata, and category-and-author similarity for lightweight recommendations."
+              : "Click a book to inspect it, or scan the shelf to simulate the recognition workflow used by the application."}
           </p>
         </div>
 
@@ -513,8 +551,8 @@ function ShelfInteraction() {
             </p>
 
             <p className="mt-2 text-sm leading-6 text-foreground/60">
-              The detected category can be used as the starting point for
-              recommendations.
+              The project uses category and author similarity to generate
+              lightweight content-based recommendations.
             </p>
           </div>
         )}
@@ -527,32 +565,32 @@ const RAG_QUESTIONS = [
   {
     question: "What is retrieved before generation?",
     chunks: [
-      "Architecture notes",
-      "Relevant document sections",
-      "Previous answers",
+      "Relevant document chunks",
+      "Semantic matches",
+      "Retrieved context",
     ],
     answer:
-      "The system retrieves the most relevant document chunks and provides them as context before generation.",
+      "The retriever finds the most relevant document chunks and passes that context to the language model before generation.",
   },
   {
-    question: "Why use top-k retrieval?",
+    question: "Why use embeddings?",
     chunks: [
-      "Similarity scores",
-      "Top matching chunks",
-      "Context window",
+      "Document embeddings",
+      "Query embedding",
+      "Semantic similarity",
     ],
     answer:
-      "Top-k keeps the context bounded while prioritising the documents most closely related to the question.",
+      "Embeddings represent documents and queries as vectors, allowing the system to search for semantically relevant information rather than relying only on exact keywords.",
   },
   {
     question: "What happens if context is missing?",
     chunks: [
-      "Low confidence",
       "No matching evidence",
-      "Fallback behaviour",
+      "Grounded context",
+      "Avoid unsupported claims",
     ],
     answer:
-      "A grounded system should avoid pretending it knows the answer when the retrieved context does not support one.",
+      "A grounded RAG system should avoid presenting unsupported information as fact when the retrieved context does not provide enough evidence.",
   },
 ];
 
@@ -612,11 +650,11 @@ function RagInteraction() {
               </p>
 
               <div className="mt-5 flex flex-wrap items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/55">
-                <span>Question</span>
+                <span>Documents</span>
                 <span>→</span>
                 <span>Embeddings</span>
                 <span>→</span>
-                <span>Search</span>
+                <span>Retrieval</span>
                 <span>→</span>
                 <span>LLM</span>
               </div>
@@ -711,9 +749,10 @@ function ProjectCard({ project }: { project: Project }) {
               href={project.github}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-3 border-b border-foreground/40 pb-1 font-mono text-[13px] font-medium uppercase tracking-[0.12em] text-foreground/75 transition-all duration-300 hover:border-accent hover:text-accent"
+              className="group inline-flex items-center gap-3 border-b border-foreground/40 pb-1 font-mono text-[13px] font-medium uppercase tracking-[0.12em] text-foreground/75 transition-all duration-300 hover:border-accent hover:text-accent"
             >
               Source on GitHub
+
               <span className="transition-transform duration-300 group-hover:translate-x-0.5">
                 ↗
               </span>
@@ -807,13 +846,8 @@ export function Projects() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div
-        ref={head.ref}
-        className={`${head.className} mb-8`}
-      >
-        <h2 className="eyebrow text-foreground/80">
-          Selected work
-        </h2>
+      <div ref={head.ref} className={`${head.className} mb-8`}>
+        <h2 className="eyebrow text-foreground/80">Selected work</h2>
       </div>
 
       <div className="overflow-hidden">

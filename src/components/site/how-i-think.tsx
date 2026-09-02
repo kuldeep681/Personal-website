@@ -13,61 +13,61 @@ type Decision = {
 
 const DECISIONS: Decision[] = [
   {
-    id: "ingest",
-    question: "How do tickets enter the system?",
+    id: "grounding",
+    question: "How do you keep AI accurate?",
     options: [
       {
-        label: "Synchronous API call",
-        take: "Simplest to reason about, but classification latency becomes the client's problem.",
+        label: "Let the model answer",
+        take: "The model can answer quickly, but it may make up information.",
       },
       {
-        label: "Durable queue",
-        take: "Accept fast, process independently. Retries and backpressure stop being emergencies.",
+        label: "Give it useful context",
+        take: "Retrieve relevant information first, then let the model answer from that context.",
         chosen: true,
       },
     ],
   },
   {
-    id: "model",
-    question: "Where does the model live?",
+    id: "threshold",
+    question: "How do you choose a model decision?",
     options: [
       {
-        label: "In-process with the API",
-        take: "Fewer moving parts, but the API scales with model memory instead of traffic.",
+        label: "Use the default threshold",
+        take: "It is simple, but it may not give the results the problem actually needs.",
       },
       {
-        label: "Separate inference service",
-        take: "Independent scaling and rollout, at the cost of one more network hop to observe.",
+        label: "Tune it for the problem",
+        take: "Choose a threshold based on what matters most, such as finding more customers likely to leave.",
         chosen: true,
       },
     ],
   },
   {
-    id: "retrieval",
-    question: "How is context selected for generation?",
+    id: "production",
+    question: "How do you turn ML into software?",
     options: [
       {
-        label: "Whole knowledge base in the prompt",
-        take: "No retrieval to maintain, but cost and hallucination both grow with the corpus.",
+        label: "Stop at the model",
+        take: "A trained model works for experiments, but users still need a way to use it.",
       },
       {
-        label: "Chunked vector search, top-k",
-        take: "Bounded prompts and traceable citations. Chunking strategy becomes the real work.",
+        label: "Build the full system",
+        take: "Add APIs, validation, testing, storage, and deployment around the model.",
         chosen: true,
       },
     ],
   },
   {
-    id: "trust",
-    question: "Who sends the final reply?",
+    id: "orchestration",
+    question: "Where should AI be used?",
     options: [
       {
-        label: "The system, automatically",
-        take: "Great demo. One confidently wrong answer costs more than the time it saved.",
+        label: "Let AI control everything",
+        take: "This gives the model a lot of freedom, but important steps can become unpredictable.",
       },
       {
-        label: "A human, from a draft",
-        take: "The engine removes the blank page, the person keeps the judgement.",
+        label: "Use AI where it helps",
+        take: "Let AI understand text and context, while normal code controls important workflow steps.",
         chosen: true,
       },
     ],
@@ -106,19 +106,21 @@ export function HowIThink() {
           {/* Main heading */}
           <div className="col-span-12 lg:col-span-6">
             <h2 className="display max-w-3xl text-[7vw] leading-[0.92] text-foreground sm:text-[4.8vw] lg:text-[2.8vw]">
-              DESIGN A SCALABLE
+              BUILDING AI
               <br />
-              TICKET PROCESSING
+              THAT WORKS
               <br />
-              <span className="text-muted-foreground">SYSTEM.</span>
+              <span className="text-muted-foreground">
+                IN REAL SYSTEMS.
+              </span>
             </h2>
           </div>
 
-          {/* Intro — now beside heading */}
+          {/* Intro */}
           <div className="col-span-12 lg:col-span-3 lg:pt-1">
             <p className="max-w-xs text-[17px] leading-7 text-muted-foreground">
-              Four decisions, each with a real trade-off. Open one to see
-              the reasoning.
+              A few simple engineering decisions I make when building
+              AI-powered software.
             </p>
           </div>
         </div>
@@ -220,8 +222,10 @@ export function HowIThink() {
                   </div>
                 </div>
               ) : (
-                <div className="hidden min-h-[220px] lg:block">
-                  {/* Intentionally empty until a question is selected */}
+                <div className="hidden min-h-[220px] lg:flex lg:items-center">
+                  <p className="font-mono text-[13px] uppercase tracking-[0.1em] text-muted-foreground">
+                    Select a question to see the decision.
+                  </p>
                 </div>
               )}
             </div>

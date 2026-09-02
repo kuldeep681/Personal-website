@@ -1,8 +1,10 @@
 import { GITHUB_URL } from "./data";
 import { useReveal } from "./use-reveal";
 
+const EMAIL = "kuldeepmandal175514@gmail.com";
 const LINKEDIN_URL = "https://www.linkedin.com/in/kuldeep-mandal175514";
-const REDDIT_URL = "https://www.reddit.com/";
+const REDDIT_URL =
+  "https://www.reddit.com/u/Inevitable-Bear-/s/fjEtp9s7Wd";
 
 export function Contact() {
   const r = useReveal();
@@ -16,82 +18,95 @@ export function Contact() {
         ref={r.ref}
         className={`${r.className} mx-auto max-w-[1400px] px-6 md:px-12`}
       >
-        <div className="grid grid-cols-12 gap-y-7 lg:gap-x-10">
+        {/* Contact header */}
+        <div className="grid grid-cols-12 items-start gap-y-6 lg:gap-x-8">
           {/* Label */}
-          <div className="col-span-12 lg:col-span-4">
+          <div className="col-span-12 lg:col-span-3">
             <p className="eyebrow">Contact</p>
           </div>
 
-          {/* Main contact area */}
-          <div className="col-span-12 lg:col-span-8">
-            <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(240px,0.8fr)] lg:items-end lg:gap-12">
-              <h2 className="display max-w-5xl text-[7vw] leading-[0.9] tracking-tight sm:text-[5vw] lg:text-[3.5vw]">
-                LET'S BUILD
-                <br />
-                <span className="text-muted-foreground">
-                  SOMETHING REAL.
-                </span>
-              </h2>
+          {/* Main statement */}
+          <div className="col-span-12 lg:col-span-6">
+            <h2 className="display max-w-3xl text-[7vw] leading-[0.9] tracking-tight sm:text-[5vw] lg:text-[3.2vw]">
+              LET&apos;S BUILD
+              <br />
+              <span className="text-muted-foreground">
+                SOMETHING REAL.
+              </span>
+            </h2>
+          </div>
 
-              <p className="max-w-sm text-[16px] leading-6 text-muted-foreground">
-                Open to interesting engineering problems, useful products and
-                conversations around backend systems, AI and software.
-              </p>
-            </div>
+          {/* Supporting text */}
+          <div className="col-span-12 lg:col-span-3 lg:pt-1">
+            <p className="max-w-xs text-[16px] leading-6 text-muted-foreground">
+              Have a problem worth solving? I&apos;m interested in building
+              useful software across backend systems, applied AI and
+              full-stack products.
+            </p>
 
-            {/* Social links */}
-            <div className="mt-9 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <a
-                href="mailto:hello@kuldeepmandal.dev"
-                className="group flex min-h-12 items-center justify-between border border-foreground px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-foreground transition-all duration-300 hover:bg-foreground hover:text-background"
-              >
-                <span>Email</span>
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  ↗
-                </span>
-              </a>
-
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="group flex min-h-12 items-center justify-between border border-border px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 hover:border-accent hover:text-accent"
-              >
-                <span>GitHub</span>
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  ↗
-                </span>
-              </a>
-
-              <a
-                href={LINKEDIN_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="group flex min-h-12 items-center justify-between border border-border px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 hover:border-accent hover:text-accent"
-              >
-                <span>LinkedIn</span>
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  ↗
-                </span>
-              </a>
-
-              <a
-                href={REDDIT_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="group flex min-h-12 items-center justify-between border border-border px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 hover:border-accent hover:text-accent"
-              >
-                <span>Reddit</span>
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  ↗
-                </span>
-              </a>
-            </div>
+            <p className="mt-5 font-mono text-[12px] font-medium uppercase tracking-[0.11em] text-foreground/45">
+              Usually somewhere between
+              <br />
+              an idea and a working system.
+            </p>
           </div>
         </div>
 
+        {/* Contact links */}
+        <div className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:mt-12">
+          <a
+            href={`mailto:${EMAIL}`}
+            className="group relative flex min-h-14 items-center justify-between overflow-hidden border border-foreground px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-foreground transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)]"
+          >
+            <span className="relative z-10">Email</span>
+
+            <span className="relative z-10 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1">
+              ↗
+            </span>
+          </a>
+
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="group relative flex min-h-14 items-center justify-between overflow-hidden border border-border px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 ease-out hover:-translate-y-1 hover:border-accent hover:text-accent hover:shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
+          >
+            <span>GitHub</span>
+
+            <span className="transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1">
+              ↗
+            </span>
+          </a>
+
+          <a
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="group relative flex min-h-14 items-center justify-between overflow-hidden border border-border px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 ease-out hover:-translate-y-1 hover:border-accent hover:text-accent hover:shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
+          >
+            <span>LinkedIn</span>
+
+            <span className="transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1">
+              ↗
+            </span>
+          </a>
+
+          <a
+            href={REDDIT_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="group relative flex min-h-14 items-center justify-between overflow-hidden border border-border px-4 py-3 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground transition-all duration-300 ease-out hover:-translate-y-1 hover:border-accent hover:text-accent hover:shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
+          >
+            <span>Reddit</span>
+
+            <span className="transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1">
+              ↗
+            </span>
+          </a>
+        </div>
+
         {/* Footer metadata */}
-        <div className="mt-14 rule-t flex flex-wrap items-center justify-between gap-4 pt-5 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground">
+        <div className="mt-12 rule-t flex flex-wrap items-center justify-between gap-4 pt-5 font-mono text-[13px] font-medium uppercase tracking-[0.13em] text-muted-foreground">
           <span>Kuldeep Mandal — Bengaluru, India</span>
 
           <span>

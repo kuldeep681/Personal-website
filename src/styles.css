@@ -2,8 +2,6 @@
 
 @source "../src";
 
-@import "tw-animate-css";
-
 @custom-variant dark (&:is(.dark *));
 
 /*
@@ -131,9 +129,6 @@
 
     font-family: var(--font-sans);
 
-    /*
-     * Comfortable global reading size.
-     */
     font-size: 18px;
     line-height: 1.65;
 
@@ -142,12 +137,16 @@
 
     font-feature-settings: "ss01";
 
-    /*
-     * Very subtle technical grid underneath the SVG network.
-     */
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      linear-gradient(
+        rgba(255, 255, 255, 0.012) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.012) 1px,
+        transparent 1px
+      );
 
     background-size: 64px 64px;
     background-position: center center;
@@ -178,19 +177,6 @@
  * ============================================================
  */
 
-/*
- * Section labels:
- *
- * ABOUT
- * EXPERIENCE
- * SELECTED WORK
- * HOW I THINK
- * LAB
- * CONTACT
- *
- * Larger technical label for comfortable reading.
- */
-
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: 0.875rem;
@@ -200,12 +186,6 @@
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
-
-/*
- * Main display typography.
- *
- * Intentionally unchanged.
- */
 
 @utility display {
   font-family: var(--font-display);
@@ -229,7 +209,10 @@
 
     opacity: 0.028;
 
-    background-image: radial-gradient(var(--color-foreground) 0.45px, transparent 0.45px);
+    background-image: radial-gradient(
+      var(--color-foreground) 0.45px,
+      transparent 0.45px
+    );
 
     background-size: 4px 4px;
   }
@@ -254,10 +237,6 @@
  * ============================================================
  * READABILITY
  * ============================================================
- *
- * Supporting copy is deliberately larger.
- *
- * Main display headings are NOT affected.
  */
 
 @layer utilities {
@@ -266,10 +245,6 @@
     line-height: 1.75;
   }
 }
-
-/*
- * Large desktop.
- */
 
 @media (min-width: 1280px) {
   .text-sm {
@@ -313,6 +288,88 @@
   }
 }
 
+/*
+ * Sleeping Z animation.
+ *
+ * The letters start close to Kernel's head and slowly
+ * rise upward before fading out.
+ */
+
+@keyframes kernel-sleep-1 {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 2px) scale(0.82);
+  }
+
+  18% {
+    opacity: 0.85;
+  }
+
+  72% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-2px, -8px) scale(1.05);
+  }
+}
+
+@keyframes kernel-sleep-2 {
+  0%,
+  22% {
+    opacity: 0;
+    transform: translate(0, 2px) scale(0.82);
+  }
+
+  40% {
+    opacity: 0.8;
+  }
+
+  72% {
+    opacity: 0.55;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-2px, -10px) scale(1.08);
+  }
+}
+
+@keyframes kernel-sleep-3 {
+  0%,
+  44% {
+    opacity: 0;
+    transform: translate(0, 2px) scale(0.82);
+  }
+
+  58% {
+    opacity: 0.75;
+  }
+
+  78% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-2px, -11px) scale(1.08);
+  }
+}
+
+@keyframes kernel-menu-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes dash-flow {
   to {
     stroke-dashoffset: -16;
@@ -340,7 +397,8 @@
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-border) var(--color-background);
+    scrollbar-color: var(--color-border)
+      var(--color-background);
   }
 
   *::-webkit-scrollbar {

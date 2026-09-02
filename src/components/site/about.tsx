@@ -6,29 +6,37 @@ const EDUCATION = [
     period: "2024 — 2026",
     degree: "MCA",
     institution: "Amity University Jharkhand",
-    location: "Ranchi",
+    location: "Ranchi, Jharkhand",
     result: "CGPA 8.03",
+    description:
+      "Focused on computer applications, software engineering and modern development practices. Built a stronger foundation in programming, databases and application development.",
   },
   {
     period: "2020 — 2023",
     degree: "BCA",
     institution: "School of Management Sciences",
-    location: "Lucknow",
+    location: "Lucknow, Uttar Pradesh",
     result: "68.6%",
+    description:
+      "Studied computer programming, databases, web technologies and software development. This is where my interest in building practical software systems started to grow.",
   },
   {
     period: "2019 — 2020",
-    degree: "XII",
+    degree: "12th",
     institution: "A.E.C.S-1",
     location: "Jaduguda, Jamshedpur",
     result: "73.2%",
+    description:
+      "Completed higher secondary education with Computer Science. Developed an early interest in computers, problem solving and technical subjects.",
   },
   {
     period: "2017 — 2018",
-    degree: "X",
+    degree: "10th",
     institution: "Atomic Energy Central School",
     location: "Turamdih, Jamshedpur",
     result: "80%",
+    description:
+      "Completed secondary education and built the academic foundation for further studies in computer applications and technology.",
   },
 ];
 
@@ -37,17 +45,33 @@ const EXPERIENCE = [
     period: "07/2026 — Present",
     role: "Software Engineer",
     company: "Atraya Technologies Pvt. Ltd.",
-    location: "Bengaluru",
+    location: "Bengaluru, Karnataka",
     description:
-      "Developing backend services using Django, handling database operations, backend application logic and API-driven functionality.",
+      "Developing and maintaining full-stack web applications using Python, Django REST Framework, React.js and SQL. Building REST APIs, implementing features, improving performance and working with Git and GitHub.",
   },
   {
-    period: "02/2026 — 05/2026",
-    role: "Trainee Software Engineer Intern",
+    period: "02/2026 — 04/2026",
+    role: "Software Engineer Intern",
     company: "Atraya Technologies Pvt. Ltd.",
-    location: "Bengaluru",
+    location: "Bengaluru, Karnataka",
     description:
-      "Contributed to backend and frontend development for the Exam Mitra web and mobile application using Flask, SQL and AI technologies.",
+      "Contributed to a full-stack news channel web application with admin and public interfaces using React.js, Flask, Python and SQL. Worked on pagination, filtering, content management, REST APIs, authentication and database operations.",
+  },
+  {
+    period: "04/2025 — 05/2025",
+    role: "Data Analysis Intern",
+    company: "Cognifyz Technologies",
+    location: "Remote",
+    description:
+      "Worked with structured datasets to clean data, perform exploratory analysis and create visual reports. Used Python for data manipulation and visualization while developing practical experience with data-driven analysis.",
+  },
+  {
+    period: "07/2022 — 09/2022",
+    role: "Summer Intern — Java Software Development",
+    company: "Analyze Infotech",
+    location: "Lucknow, Uttar Pradesh",
+    description:
+      "Built an Inventory Management System using Java and MySQL. The application supported product management, inventory tracking, sales reports and a simple login system for managing business stock.",
   },
 ];
 
@@ -73,6 +97,28 @@ function BlinkingUnderscore() {
       _
     </span>
   );
+}
+
+function DegreeLabel({ degree }: { degree: string }) {
+  if (degree === "10th") {
+    return (
+      <>
+        10
+        <sup className="ml-[1px] text-[0.55em] align-super">th</sup>
+      </>
+    );
+  }
+
+  if (degree === "12th") {
+    return (
+      <>
+        12
+        <sup className="ml-[1px] text-[0.55em] align-super">th</sup>
+      </>
+    );
+  }
+
+  return degree;
 }
 
 function CarouselControls({
@@ -174,7 +220,7 @@ function EducationCarousel() {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="relative h-[245px] overflow-visible">
+      <div className="relative h-[300px] overflow-visible">
         <div
           className="absolute inset-x-0 top-1"
           style={{
@@ -188,7 +234,7 @@ function EducationCarousel() {
           }}
         >
           <div className="group border border-hairline p-5 transition-all duration-400 ease-out hover:-translate-y-1 hover:scale-[1.008] hover:border-accent/50 hover:shadow-[0_10px_28px_rgba(0,0,0,0.10)] sm:p-6">
-            <div className="flex h-[195px] flex-col">
+            <div className="flex min-h-[250px] flex-col">
               <div className="flex items-start justify-between gap-5">
                 <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-accent">
                   {item.period}
@@ -201,7 +247,7 @@ function EducationCarousel() {
 
               <div className="mt-auto">
                 <p className="font-display text-[1.55rem] tracking-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-[1.7rem]">
-                  {item.degree}
+                  <DegreeLabel degree={item.degree} />
                   <BlinkingUnderscore />
                 </p>
 
@@ -211,6 +257,10 @@ function EducationCarousel() {
 
                 <p className="mt-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/45">
                   {item.location}
+                </p>
+
+                <p className="mt-4 max-w-xl text-[14px] leading-6 text-muted-foreground">
+                  {item.description}
                 </p>
               </div>
             </div>
@@ -291,7 +341,7 @@ function ExperienceCarousel() {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="relative h-[245px] overflow-visible">
+      <div className="relative h-[300px] overflow-visible">
         <div
           className="absolute inset-x-0 top-1"
           style={{
@@ -305,7 +355,7 @@ function ExperienceCarousel() {
           }}
         >
           <div className="group border border-hairline p-5 transition-all duration-400 ease-out hover:-translate-y-1 hover:scale-[1.008] hover:border-accent/50 hover:shadow-[0_10px_28px_rgba(0,0,0,0.10)] sm:p-6">
-            <div className="flex h-[195px] flex-col">
+            <div className="flex min-h-[250px] flex-col">
               <div className="flex items-start justify-between gap-5">
                 <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-accent">
                   {item.period}
@@ -317,7 +367,7 @@ function ExperienceCarousel() {
               </div>
 
               <div className="mt-auto">
-                <p className="font-display text-[1.45rem] leading-tight tracking-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-[1.6rem]">
+                <p className="font-display text-[1.35rem] leading-tight tracking-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-[1.5rem]">
                   {item.role}
                   <BlinkingUnderscore />
                 </p>
@@ -326,7 +376,7 @@ function ExperienceCarousel() {
                   {item.company}
                 </p>
 
-                <p className="mt-3 max-w-xl text-[16px] leading-6 text-foreground/65">
+                <p className="mt-3 max-w-xl text-[15px] leading-6 text-foreground/65">
                   {item.description}
                 </p>
               </div>
@@ -374,26 +424,29 @@ export function About() {
         {/* About */}
         <div
           ref={a.ref}
-          className={`${a.className} grid grid-cols-12 gap-y-7 lg:gap-x-10`}
+          className={`${a.className} grid grid-cols-12 items-start gap-y-6 lg:gap-x-8`}
         >
-          <div className="col-span-12 lg:col-span-4">
+          {/* Label */}
+          <div className="col-span-12 lg:col-span-3">
             <p className="eyebrow">About</p>
           </div>
 
-          <div className="col-span-12 lg:col-span-8">
-            <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] lg:items-start lg:gap-12">
-              <p className="max-w-4xl font-display text-[4.6vw] leading-[1.02] tracking-tight sm:text-[2.9vw] lg:text-[2.05vw]">
-                I like the unglamorous part of engineering — the part where a
-                system keeps working after the demo ends.
-              </p>
+          {/* Main statement */}
+          <div className="col-span-12 lg:col-span-6">
+            <p className="max-w-3xl font-display text-[4.6vw] leading-[1.02] tracking-tight sm:text-[2.9vw] lg:text-[2.05vw]">
+              I like the unglamorous part of engineering — the part where a
+              system keeps working after the demo ends.
+            </p>
+          </div>
 
-              <p className="max-w-md text-[16px] leading-6 text-muted-foreground">
-                I work across backend services, applied AI and the interfaces
-                that sit on top of them. Most of what I build starts as a
-                question about how something should be structured, not which
-                framework to use.
-              </p>
-            </div>
+          {/* Supporting text */}
+          <div className="col-span-12 lg:col-span-3 lg:pt-1">
+            <p className="max-w-xs text-[16px] leading-6 text-muted-foreground">
+              I work across backend services, applied AI and the interfaces
+              that sit on top of them. Most of what I build starts as a
+              question about how something should be structured, not which
+              framework to use.
+            </p>
           </div>
         </div>
 

@@ -240,6 +240,13 @@ function SystemField() {
 }
 
 export function Hero() {
+  const scrollToWork = () => {
+    document.getElementById("work")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   return (
     <section className="grain relative min-h-[92svh] overflow-hidden pt-28 md:min-h-[94svh] md:pt-32">
       {/* Interactive system mesh */}
@@ -263,9 +270,7 @@ export function Hero() {
             <p className="eyebrow mb-7 flex items-center gap-3 md:mb-8">
               <span className="inline-block h-px w-8 bg-border transition-all duration-500 md:w-10" />
 
-              <span>
-                Software Engineer — Bengaluru, India
-              </span>
+              <span>Software Engineer — Bengaluru, India</span>
             </p>
 
             <h1 className="display max-w-4xl text-[19vw] leading-[0.88] tracking-[-0.045em] sm:text-[13vw] md:text-[11vw] lg:text-[7.2vw]">
@@ -278,13 +283,14 @@ export function Hero() {
           {/* Introduction */}
           <div className="col-span-12 lg:col-span-7 lg:col-start-5">
             <p className="max-w-xl font-display text-[1.65rem] leading-[1.12] tracking-[-0.025em] text-foreground sm:text-3xl md:text-[2.15rem]">
-              Building AI systems that{" "}
-              <span className="text-accent">actually ship</span>.
+              I build systems that think, scale, and{" "}
+              <span className="text-accent">ship</span>.
             </p>
 
             <p className="mt-4 max-w-md text-[16px] leading-7 text-muted-foreground">
-              Backend and full-stack engineering, applied AI, and the
-              plumbing in between.
+              Software engineer working across backend systems, applied AI,
+              and full-stack products — building APIs, data-driven services,
+              and intelligent workflows from the ground up.
             </p>
 
             {/* CTAs */}
@@ -318,21 +324,26 @@ export function Hero() {
 
         {/* Hero metadata */}
         <div className="mt-14 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rule-t py-5 font-mono text-[13px] font-medium uppercase leading-6 tracking-[0.13em] text-muted-foreground md:mt-16">
-          <span>
-            Currently at Atraya Technologies
-          </span>
+          <span>BUILDING AI-DRIVEN SOFTWARE</span>
 
           <span className="hidden sm:inline">
-            AI systems · Backend · Full-stack
+            Machine Learning · Applied AI · RAG · Backend systems
           </span>
 
-          <span className="group flex items-center gap-2 text-accent">
+          <button
+            type="button"
+            onClick={scrollToWork}
+            className="group flex cursor-pointer items-center gap-2 text-accent transition-colors duration-300 hover:text-foreground"
+            aria-label="Scroll to selected work"
+          >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent transition-transform duration-300 group-hover:scale-125" />
-            <span>scroll</span>
+
+            <span>Scroll to work</span>
+
             <span className="transition-transform duration-300 group-hover:translate-y-1">
               ↓
             </span>
-          </span>
+          </button>
         </div>
       </div>
     </section>
