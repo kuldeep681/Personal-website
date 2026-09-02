@@ -54,13 +54,20 @@ const EXPERIENCE = [
 const AUTO_PLAY_MS = 7000;
 const TRANSITION_MS = 650;
 
+type CarouselControlsProps = {
+  current: number;
+  total: number;
+  previous: () => void;
+  next: () => void;
+};
+
 function BlinkingUnderscore() {
   return (
     <span
       aria-hidden="true"
-      className="ml-2 inline-block font-mono font-bold leading-none text-accent"
+      className="ml-2 inline-block font-mono text-[1.15em] font-bold leading-none text-accent"
       style={{
-        animation: "about-cursor-blink 1.2s ease-in-out infinite",
+        animation: "about-underscore-blink 1s steps(2, end) infinite",
       }}
     >
       _
@@ -73,12 +80,7 @@ function CarouselControls({
   total,
   previous,
   next,
-}: {
-  current: number;
-  total: number;
-  previous: () => void;
-  next: () => void;
-}) {
+}: CarouselControlsProps) {
   return (
     <div className="mt-6 flex flex-col items-center">
       <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-foreground/60">
@@ -172,9 +174,9 @@ function EducationCarousel() {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="relative h-[235px] overflow-hidden">
+      <div className="relative h-[245px] overflow-visible">
         <div
-          className="absolute inset-0 border border-hairline p-5 sm:p-6"
+          className="absolute inset-x-0 top-1"
           style={{
             opacity: transitioning ? 0 : 1,
             transform: transitioning
@@ -185,30 +187,32 @@ function EducationCarousel() {
             transition: `opacity ${TRANSITION_MS}ms ease, transform ${TRANSITION_MS}ms ease`,
           }}
         >
-          <div className="flex h-full flex-col">
-            <div className="flex items-start justify-between gap-5">
-              <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-accent">
-                {item.period}
-              </span>
+          <div className="group border border-hairline p-5 transition-all duration-400 ease-out hover:-translate-y-1 hover:scale-[1.008] hover:border-accent/50 hover:shadow-[0_10px_28px_rgba(0,0,0,0.10)] sm:p-6">
+            <div className="flex h-[195px] flex-col">
+              <div className="flex items-start justify-between gap-5">
+                <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-accent">
+                  {item.period}
+                </span>
 
-              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/50">
-                {item.result}
-              </span>
-            </div>
+                <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/50">
+                  {item.result}
+                </span>
+              </div>
 
-            <div className="mt-auto">
-              <p className="flex items-center font-display text-[1.55rem] tracking-tight text-foreground transition-colors duration-300 hover:text-accent sm:text-[1.7rem]">
-                {item.degree}
-                <BlinkingUnderscore />
-              </p>
+              <div className="mt-auto">
+                <p className="font-display text-[1.55rem] tracking-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-[1.7rem]">
+                  {item.degree}
+                  <BlinkingUnderscore />
+                </p>
 
-              <p className="mt-2 max-w-md text-[16px] leading-6 text-foreground/70">
-                {item.institution}
-              </p>
+                <p className="mt-2 max-w-md text-[16px] leading-6 text-foreground/70">
+                  {item.institution}
+                </p>
 
-              <p className="mt-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/45">
-                {item.location}
-              </p>
+                <p className="mt-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/45">
+                  {item.location}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -287,9 +291,9 @@ function ExperienceCarousel() {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="relative h-[235px] overflow-hidden">
+      <div className="relative h-[245px] overflow-visible">
         <div
-          className="absolute inset-0 border border-hairline p-5 sm:p-6"
+          className="absolute inset-x-0 top-1"
           style={{
             opacity: transitioning ? 0 : 1,
             transform: transitioning
@@ -300,30 +304,32 @@ function ExperienceCarousel() {
             transition: `opacity ${TRANSITION_MS}ms ease, transform ${TRANSITION_MS}ms ease`,
           }}
         >
-          <div className="flex h-full flex-col">
-            <div className="flex items-start justify-between gap-5">
-              <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-accent">
-                {item.period}
-              </span>
+          <div className="group border border-hairline p-5 transition-all duration-400 ease-out hover:-translate-y-1 hover:scale-[1.008] hover:border-accent/50 hover:shadow-[0_10px_28px_rgba(0,0,0,0.10)] sm:p-6">
+            <div className="flex h-[195px] flex-col">
+              <div className="flex items-start justify-between gap-5">
+                <span className="font-mono text-[12px] font-medium tracking-[0.12em] text-accent">
+                  {item.period}
+                </span>
 
-              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/45">
-                {item.location}
-              </span>
-            </div>
+                <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-foreground/45">
+                  {item.location}
+                </span>
+              </div>
 
-            <div className="mt-auto">
-              <p className="flex items-center font-display text-[1.45rem] leading-tight tracking-tight text-foreground transition-colors duration-300 hover:text-accent sm:text-[1.6rem]">
-                {item.role}
-                <BlinkingUnderscore />
-              </p>
+              <div className="mt-auto">
+                <p className="font-display text-[1.45rem] leading-tight tracking-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-[1.6rem]">
+                  {item.role}
+                  <BlinkingUnderscore />
+                </p>
 
-              <p className="mt-2 font-mono text-[12px] font-medium uppercase tracking-[0.1em] text-foreground/70">
-                {item.company}
-              </p>
+                <p className="mt-2 font-mono text-[12px] font-medium uppercase tracking-[0.1em] text-foreground/70">
+                  {item.company}
+                </p>
 
-              <p className="mt-3 max-w-xl text-[16px] leading-6 text-foreground/65">
-                {item.description}
-              </p>
+                <p className="mt-3 max-w-xl text-[16px] leading-6 text-foreground/65">
+                  {item.description}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -344,79 +350,76 @@ export function About() {
   const b = useReveal();
 
   return (
-    <section
-      id="about"
-      className="mx-auto max-w-[1400px] scroll-mt-24 px-6 py-14 md:px-12 md:py-18"
-    >
-      <style>{`
-        @keyframes about-cursor-blink {
-          0%,
-          45% {
-            opacity: 1;
-          }
+    <>
+      <style>
+        {`
+          @keyframes about-underscore-blink {
+            0%,
+            45% {
+              opacity: 1;
+            }
 
-          50%,
-          100% {
-            opacity: 0.18;
+            46%,
+            100% {
+              opacity: 0.12;
+            }
           }
-        }
+        `}
+      </style>
 
-        @media (prefers-reduced-motion: reduce) {
-          .about-cursor-blink {
-            animation: none !important;
-            opacity: 1 !important;
-          }
-        }
-      `}</style>
-
-      {/* About */}
-      <div
-        ref={a.ref}
-        className={`${a.className} grid grid-cols-12 gap-y-7 lg:gap-x-10`}
+      <section
+        id="about"
+        className="mx-auto max-w-[1400px] scroll-mt-24 px-6 py-14 md:px-12 md:py-18"
       >
-        <div className="col-span-12 lg:col-span-4">
-          <p className="eyebrow">About</p>
-        </div>
-
-        <div className="col-span-12 lg:col-span-8">
-          <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] lg:items-start lg:gap-12">
-            <p className="max-w-4xl font-display text-[4.6vw] leading-[1.02] tracking-tight sm:text-[2.9vw] lg:text-[2.05vw]">
-              I like the unglamorous part of engineering — the part where a
-              system keeps working after the demo ends.
-            </p>
-
-            <p className="max-w-md text-[16px] leading-6 text-muted-foreground">
-              I work across backend services, applied AI and the interfaces
-              that sit on top of them. Most of what I build starts as a
-              question about how something should be structured, not which
-              framework to use.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Education + Experience */}
-      <div
-        id="experience"
-        ref={b.ref}
-        className={`${b.className} mt-14 scroll-mt-24 md:mt-16`}
-      >
-        <div className="grid grid-cols-12 gap-y-10 lg:gap-x-10">
-          {/* Work Experience — LEFT */}
-          <div className="col-span-12 lg:col-span-6 lg:order-1">
-            <p className="eyebrow mb-5">Work Experience</p>
-
-            <ExperienceCarousel />
+        {/* About */}
+        <div
+          ref={a.ref}
+          className={`${a.className} grid grid-cols-12 gap-y-7 lg:gap-x-10`}
+        >
+          <div className="col-span-12 lg:col-span-4">
+            <p className="eyebrow">About</p>
           </div>
 
-          {/* Education — RIGHT */}
-          <div className="col-span-12 lg:col-span-6 lg:order-2">
-            <p className="eyebrow mb-5">Education</p>
+          <div className="col-span-12 lg:col-span-8">
+            <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] lg:items-start lg:gap-12">
+              <p className="max-w-4xl font-display text-[4.6vw] leading-[1.02] tracking-tight sm:text-[2.9vw] lg:text-[2.05vw]">
+                I like the unglamorous part of engineering — the part where a
+                system keeps working after the demo ends.
+              </p>
 
-            <EducationCarousel />
+              <p className="max-w-md text-[16px] leading-6 text-muted-foreground">
+                I work across backend services, applied AI and the interfaces
+                that sit on top of them. Most of what I build starts as a
+                question about how something should be structured, not which
+                framework to use.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+
+        {/* Education + Experience */}
+        <div
+          id="experience"
+          ref={b.ref}
+          className={`${b.className} mt-14 scroll-mt-24 md:mt-16`}
+        >
+          <div className="grid grid-cols-12 gap-y-10 lg:gap-x-10">
+            {/* Work Experience — LEFT */}
+            <div className="col-span-12 lg:col-span-6">
+              <p className="eyebrow mb-5">Work Experience</p>
+
+              <ExperienceCarousel />
+            </div>
+
+            {/* Education — RIGHT */}
+            <div className="col-span-12 lg:col-span-6">
+              <p className="eyebrow mb-5">Education</p>
+
+              <EducationCarousel />
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
