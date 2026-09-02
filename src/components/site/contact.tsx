@@ -110,7 +110,7 @@ export function Contact() {
           <span>Kuldeep Mandal — Bengaluru, India</span>
 
           <span>
-            Kernel is watching{" "}
+            Kernel is sleeping{" "}
             <span className="text-accent">·</span> press ⌘K
           </span>
         </div>
