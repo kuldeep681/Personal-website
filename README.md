@@ -44,4 +44,13 @@ Clone the repository:
 ```bash
 git clone https://github.com/kuldeep681/Personal-website.git
 cd Personal-website
+```
 
+## Project Goals
+
+This portfolio is continuously evolving with a focus on:
+
+- Presenting projects and professional experience clearly
+- Maintaining a responsive and accessible user experience
+- Keeping project information and documentation up to date
+- Experimenting with modern web technologies and design patterns
