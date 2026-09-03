@@ -29,6 +29,14 @@ This website is designed as a central place to learn more about my professional 
 
 Make sure you have Node.js and npm installed.
 
+## Roadmap
+
+- Continue improving the portfolio experience
+- Add new projects and case studies
+- Improve accessibility and responsive behavior
+- Keep the documentation updated
+
+
 ### Installation
 
 Clone the repository:
@@ -36,3 +44,4 @@ Clone the repository:
 ```bash
 git clone https://github.com/kuldeep681/Personal-website.git
 cd Personal-website
+
